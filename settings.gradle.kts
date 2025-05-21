@@ -21,4 +21,17 @@ dependencyResolutionManagement {
 
 rootProject.name = "VideoApp"
 include(":app")
- 
+include(":core")
+include(":core:common")
+include(":core:data")
+include(":core:database")
+include(":core:designsystem")
+include(":core:domain")
+include(":core:model")
+include(":core:network")
+include(":features")
+include(":features:home")
+include(":features:search")
+include(":features:bookmark")
+include(":featues:detail")
+include(":features:detail")
