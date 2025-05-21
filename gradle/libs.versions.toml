@@ -7,7 +7,29 @@ junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.9.0"
 activityCompose = "1.10.1"
-composeBom = "2024.04.01"
+composeBom = "2025.05.01"
+kotlinBomVersion = "1.8.0"
+lifecycleRuntimeKtxVersion = "2.3.1"
+composeBomVersion = "2022.10.00"
+material3Version = "1.1.1"
+toolingPreviewVersion = "1.4.3"
+toolingVersion = "1.4.3"
+kotlinxSerializationJson = "1.5.1"
+retrofitKotlinxSerializationJson = "1.0.0"
+retrofit = "2.9.0"
+kotlinxCoroutines = "1.7.3"
+hilt = "2.49"
+androidxHiltNavigationCompose = "1.2.0"
+navigationCompose = "2.6.0"
+okhttp = "4.10.0"
+roomVersion = "2.7.1"
+coil = "2.2.2"
+viewModelVersion = "2.6.1"
+viewModelComposeVersion = ":2.6.1"
+timber = "5.0.1"
+androidxCoreSplashscreen = "1.0.1"
+constraintlayoutVersion = "1.1.1"
+
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -24,6 +46,24 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+toolingPreview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "toolingPreviewVersion" }
+tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "toolingPreviewVersion" }
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+retrofit-kotlin-serialization = { group = "com.jakewharton.retrofit", name = "retrofit2-kotlinx-serialization-converter", version.ref = "retrofitKotlinxSerializationJson" }
+retrofit-core = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinxCoroutines" }
+androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "androidxHiltNavigationCompose" }
+hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
+hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
+okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "roomVersion" }
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "roomVersion" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomVersion" }
+coil-kt = { group = "io.coil-kt", name = "coil", version.ref = "coil" }
+coil-kt-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
+constraintlayout = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintlayoutVersion" }
+androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "androidxCoreSplashscreen" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
