@@ -1,20 +1,20 @@
 package alireza.nezami.database.converter
 
-import alireza.nezami.database.entity.VideoEntity
+import alireza.nezami.database.entity.VideoVariantsEntity
 import androidx.room.TypeConverter
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-object VideoConverters {
+object VideoVariantsConverters {
     private val json = Json { ignoreUnknownKeys = true }
 
     @TypeConverter
-    fun fromVideoEntityList(list: List<VideoEntity>?): String? {
-        return list?.let { json.encodeToString(it) }
+    fun fromVideoVariants(value: VideoVariantsEntity?): String? {
+        return value?.let { json.encodeToString(it) }
     }
 
     @TypeConverter
-    fun toVideoEntityList(value: String?): List<VideoEntity>? {
+    fun toVideoVariants(value: String?): VideoVariantsEntity? {
         return value?.let { json.decodeFromString(it) }
     }
 }
