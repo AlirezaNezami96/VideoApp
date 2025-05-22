@@ -17,5 +17,6 @@ data class VideoHitDM(
         val comments: Int,
         val userId: Int,
         val user: String,
-        val userImageURL: String
+        val userImageURL: String,
+        val isBookmarked: Boolean = false
 ) : Parcelable
