@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "alireza.nezami.designsystem"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 24
@@ -35,12 +35,11 @@ android {
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    implementation(libs.androidx.material3)
+    implementation(libs.material3)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.bom)
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling)
-    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.toolingPreview)
+    implementation(libs.tooling)
 }

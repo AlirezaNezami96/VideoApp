@@ -2,16 +2,23 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
 }
+val pixabayApiKey: String? by project
 
 android {
-    namespace = "alireza.nezami.network"
-    compileSdk = 34
 
+    namespace = "alireza.nezami.network"
+    compileSdk = 35
+    buildFeatures {
+        buildConfig = true
+    }
     defaultConfig {
         minSdk = 24
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
+        buildConfigField("String", "PIXABAY_API_KEY", "\"$pixabayApiKey\"")
+
+
     }
 
     buildTypes {

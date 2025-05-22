@@ -1,5 +1,6 @@
 package alireza.nezami.model.data
 
+import alireza.nezami.model.domain.VideoHitDM
 import kotlinx.serialization.Serializable
 
 @Serializable
