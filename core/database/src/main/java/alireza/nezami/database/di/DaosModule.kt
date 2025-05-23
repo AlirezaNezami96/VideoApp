@@ -2,7 +2,7 @@ package alireza.nezami.database.di
 
 import alireza.nezami.database.dao.VideoDao
 import alireza.nezami.database.dao.BookmarkDao
-import alireza.nezami.database.database.MovieAppDatabase
+import alireza.nezami.database.database.VideoAppDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -13,12 +13,12 @@ import dagger.hilt.components.SingletonComponent
 object DaosModule {
     @Provides
     fun providesFavoriteDao(
-            database: MovieAppDatabase,
+            database: VideoAppDatabase,
     ): VideoDao = database.videoDao()
 
     @Provides
     fun providesGenreDao(
-            database: MovieAppDatabase,
+            database: VideoAppDatabase,
     ): BookmarkDao = database.bookmarkDao()
 
 }
