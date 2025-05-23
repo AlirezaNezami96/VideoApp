@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
@@ -41,5 +42,6 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.toolingPreview)
-    implementation(libs.tooling)
+    debugImplementation(libs.tooling)
+    implementation(libs.coil.kt.compose)
 }

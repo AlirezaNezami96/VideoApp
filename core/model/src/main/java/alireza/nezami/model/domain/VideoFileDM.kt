@@ -6,7 +6,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class VideoFileDM(
-        val url: String, val width: Int, val height: Int, val size: Int, val thumbnail: String
+        val url: String, val width: Int, val height: Double, val size: Int, val thumbnail: String
 ) : Parcelable
 
 fun VideoFileDM.toEntity() = VideoFileEntity(
