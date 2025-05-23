@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    id ("kotlin-kapt")
 }
 val pixabayApiKey: String? by project
 
@@ -48,4 +49,6 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
 }

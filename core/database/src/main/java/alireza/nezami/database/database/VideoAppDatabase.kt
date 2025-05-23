@@ -17,7 +17,7 @@ import androidx.room.TypeConverters
 @TypeConverters(
     VideoConverters::class, VideoFileConverters::class, VideoVariantsConverters::class
 )
-abstract class MovieAppDatabase : RoomDatabase() {
+abstract class VideoAppDatabase : RoomDatabase() {
     abstract fun videoDao(): VideoDao
     abstract fun bookmarkDao(): BookmarkDao
 }
