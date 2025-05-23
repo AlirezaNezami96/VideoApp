@@ -1,5 +1,6 @@
-package alireza.nezami.database.entity
+package alireza.nezami.model.entity
 
+import alireza.nezami.model.domain.VideoFileDM
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -20,3 +21,11 @@ data class VideoFileEntity(
         )
     }
 }
+
+fun VideoFileEntity.toDM() = VideoFileDM(
+    url = url,
+    width = width,
+    height = height,
+    size = size,
+    thumbnail = thumbnail
+)

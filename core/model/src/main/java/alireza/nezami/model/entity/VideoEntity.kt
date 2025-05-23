@@ -1,5 +1,6 @@
-package alireza.nezami.database.entity
+package alireza.nezami.model.entity
 
+import alireza.nezami.model.domain.VideoHitDM
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.serialization.Serializable
@@ -21,4 +22,21 @@ data class VideoEntity(
         val user: String,
         val userImageURL: String,
         var isBookmarked: Boolean = false
+)
+
+fun VideoEntity.toDM() = VideoHitDM(
+    id = id,
+    pageURL = pageURL,
+    type = type,
+    tags = tags,
+    duration = duration,
+    videos = videos?.toDM(),
+    views = views,
+    downloads = downloads,
+    likes = likes,
+    comments = comments,
+    userId = userId,
+    user = user,
+    userImageURL = userImageURL,
+    isBookmarked = isBookmarked
 )

@@ -2,7 +2,7 @@ package alireza.nezami.data.repository
 
 import alireza.nezami.data.util.SynchronizationState
 import alireza.nezami.data.util.VideoSynchronizer
-import alireza.nezami.database.entity.VideoEntity
+import alireza.nezami.model.entity.VideoEntity
 import alireza.nezami.model.data.VideoHitDto
 import alireza.nezami.network.data_source.VideoDataSource
 import kotlinx.coroutines.flow.Flow

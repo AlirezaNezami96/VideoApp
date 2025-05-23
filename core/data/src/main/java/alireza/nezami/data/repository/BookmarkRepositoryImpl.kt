@@ -1,7 +1,7 @@
 package alireza.nezami.data.repository
 
 import alireza.nezami.database.dao.BookmarkDao
-import alireza.nezami.database.entity.BookmarkEntity
+import alireza.nezami.model.entity.BookmarkEntity
 import javax.inject.Inject
 
 class BookmarkRepositoryImpl @Inject constructor(

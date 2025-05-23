@@ -1,8 +1,8 @@
 package alireza.nezami.data.util
 
-import alireza.nezami.database.entity.VideoEntity
-import alireza.nezami.database.entity.VideoFileEntity
-import alireza.nezami.database.entity.VideoVariantsEntity
+import alireza.nezami.model.entity.VideoEntity
+import alireza.nezami.model.entity.VideoFileEntity
+import alireza.nezami.model.entity.VideoVariantsEntity
 import alireza.nezami.model.data.VideoFileDto
 import alireza.nezami.model.data.VideoHitDto
 import javax.inject.Inject
