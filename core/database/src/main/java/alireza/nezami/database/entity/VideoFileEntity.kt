@@ -9,4 +9,14 @@ data class VideoFileEntity(
     val height: Int,
     val size: Int,
     val thumbnail: String
-)
+) {
+    companion object{
+        val EMPTY = VideoFileEntity(
+            url = "",
+            width = 0,
+            height = 0,
+            size = 0,
+            thumbnail = ""
+        )
+    }
+}
