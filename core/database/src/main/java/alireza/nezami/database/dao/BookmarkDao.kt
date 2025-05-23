@@ -1,6 +1,6 @@
 package alireza.nezami.database.dao
 
-import alireza.nezami.database.entity.BookmarkEntity
+import alireza.nezami.model.entity.BookmarkEntity
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy

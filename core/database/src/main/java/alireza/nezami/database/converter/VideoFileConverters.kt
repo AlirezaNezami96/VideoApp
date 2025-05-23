@@ -1,6 +1,6 @@
 package alireza.nezami.database.converter
 
-import alireza.nezami.database.entity.VideoFileEntity
+import alireza.nezami.model.entity.VideoFileEntity
 import androidx.room.TypeConverter
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json

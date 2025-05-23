@@ -1,6 +1,6 @@
 package alireza.nezami.database.dao
 
-import alireza.nezami.database.entity.VideoEntity
+import alireza.nezami.model.entity.VideoEntity
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction

@@ -5,8 +5,8 @@ import alireza.nezami.database.converter.VideoFileConverters
 import alireza.nezami.database.converter.VideoVariantsConverters
 import alireza.nezami.database.dao.BookmarkDao
 import alireza.nezami.database.dao.VideoDao
-import alireza.nezami.database.entity.BookmarkEntity
-import alireza.nezami.database.entity.VideoEntity
+import alireza.nezami.model.entity.BookmarkEntity
+import alireza.nezami.model.entity.VideoEntity
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
