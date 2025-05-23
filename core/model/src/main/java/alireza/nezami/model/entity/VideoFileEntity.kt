@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 data class VideoFileEntity(
     val url: String,
     val width: Int,
-    val height: Int,
+    val height: Double,
     val size: Int,
     val thumbnail: String
 ) {
@@ -15,7 +15,7 @@ data class VideoFileEntity(
         val EMPTY = VideoFileEntity(
             url = "",
             width = 0,
-            height = 0,
+            height = 0.0,
             size = 0,
             thumbnail = ""
         )

@@ -1,5 +1,6 @@
 package alireza.nezami.videoapp
 
+import alireza.nezami.designsystem.component.VideoCard
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -20,26 +21,15 @@ class MainActivity : ComponentActivity() {
         setContent {
             VideoAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android", modifier = Modifier.padding(innerPadding)
-                    )
+                    VideoCard(thumbnail = "https://cdn.pixabay.com/video/2015/08/08/125-135736646_large.jpg",
+                        userName = "John Doe",
+                        userAvatar = "https://cdn.pixabay.com/user/2015/10/16/09-28-45-303_250x250.png",
+                        height = 300.0,
+                        tagsList = listOf("Action", "Adventure", "Drama"),
+                        isBookmarked = false,
+                        onVideoCardClick = {})
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!", modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    VideoAppTheme {
-        Greeting("Android")
     }
 }

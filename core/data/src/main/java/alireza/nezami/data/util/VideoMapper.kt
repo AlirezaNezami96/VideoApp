@@ -40,7 +40,7 @@ class VideoMapper @Inject constructor() {
         return VideoFileEntity(
             url = url.orEmpty(),
             width = width ?: 0,
-            height = height ?: 0,
+            height = height ?: 0.0,
             size = size ?: 0,
             thumbnail = thumbnail.orEmpty()
         )

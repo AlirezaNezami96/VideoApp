@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home">Home</string>
+    <string name="search">Search</string>
+    <string name="favorite">Favorite</string>
+    <string name="there_is_no_videos_yet">There is no videos yet!</string>
+    <string name="find_videos_by_title">"Find your video by Type title, categories, etc "</string>
+    <string name="video_result_was_empty">we are sorry, we can not find the video :(</string>
+</resources>
