@@ -3,12 +3,21 @@ package alireza.nezami.database.dao
 import alireza.nezami.database.entity.VideoEntity
 import androidx.room.Dao
 import androidx.room.Query
+import androidx.room.Transaction
+import kotlinx.coroutines.flow.Flow
 
 /**
  * DAO for [VideoEntity] access
  */
 @Dao
 interface VideoDao {
+    @Transaction
+    @Query(value = "SELECT * FROM videos")
+    fun getAllVideos(): Flow<List<VideoEntity>>
+
+    @Transaction
+    @Query(value = "SELECT * FROM videos WHERE id = :id LIMIT 1")
+    fun getVideoById(id: Int): Flow<VideoEntity?>
 
     @Query("DELETE FROM videos")
     suspend fun deleteAllVideos()

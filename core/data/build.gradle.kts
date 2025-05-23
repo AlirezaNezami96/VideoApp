@@ -44,5 +44,6 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.hilt.android)
+    implementation(libs.timber)
     kapt(libs.hilt.compiler)
 }

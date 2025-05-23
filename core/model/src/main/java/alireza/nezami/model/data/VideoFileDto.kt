@@ -18,4 +18,15 @@ data class VideoFileDto(
         size = size ?: 0,
         thumbnail = thumbnail.orEmpty()
     )
+
+    // empty
+    companion object{
+        fun empty() = VideoFileDto(
+            url = "",
+            width = 0,
+            height = 0,
+            size = 0,
+            thumbnail = ""
+        )
+    }
 }
