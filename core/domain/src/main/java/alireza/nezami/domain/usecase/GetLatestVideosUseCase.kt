@@ -1,6 +1,6 @@
 package alireza.nezami.domain.usecase
 
-import alireza.nezami.data.repository.VideoRepository
+import alireza.nezami.domain.repository.VideoRepository
 import alireza.nezami.model.domain.VideoHitDM
 import alireza.nezami.model.entity.toDM
 import kotlinx.coroutines.flow.Flow

@@ -1,6 +1,6 @@
 package alireza.nezami.domain.usecase
 
-import alireza.nezami.data.repository.BookmarkRepository
+import alireza.nezami.domain.repository.BookmarkRepository
 import alireza.nezami.model.domain.VideoHitDM
 import alireza.nezami.model.entity.BookmarkEntity
 import javax.inject.Inject

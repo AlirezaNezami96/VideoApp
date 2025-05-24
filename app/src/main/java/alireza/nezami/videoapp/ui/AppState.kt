@@ -1,6 +1,6 @@
 package alireza.nezami.videoapp.ui
 
-import alireza.nezami.data.util.NetworkMonitor
+import alireza.nezami.domain.util.NetworkMonitor
 import alireza.nezami.videoapp.navigation.TopLevelDestination
 import alireza.nezami.videoapp.navigation.bookmarkNavigationRoute
 import alireza.nezami.videoapp.navigation.homeNavigationRoute
@@ -25,9 +25,9 @@ import kotlinx.coroutines.flow.stateIn
 
 @Composable
 fun rememberAppState(
-    networkMonitor: NetworkMonitor,
-    coroutineScope: CoroutineScope = rememberCoroutineScope(),
-    navController: NavHostController = rememberNavController(),
+        networkMonitor: NetworkMonitor,
+        coroutineScope: CoroutineScope = rememberCoroutineScope(),
+        navController: NavHostController = rememberNavController(),
 ): AppState {
     return remember(
         navController,
@@ -44,9 +44,9 @@ fun rememberAppState(
 
 @Stable
 class AppState(
-    val navController: NavHostController,
-    coroutineScope: CoroutineScope,
-    networkMonitor: NetworkMonitor,
+        val navController: NavHostController,
+        coroutineScope: CoroutineScope,
+        networkMonitor: NetworkMonitor,
 ) {
     val currentDestination: NavDestination?
         @Composable get() = navController

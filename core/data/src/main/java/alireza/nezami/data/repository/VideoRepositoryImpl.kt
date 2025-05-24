@@ -2,6 +2,7 @@ package alireza.nezami.data.repository
 
 import alireza.nezami.data.util.SynchronizationState
 import alireza.nezami.data.util.VideoSynchronizer
+import alireza.nezami.domain.repository.VideoRepository
 import alireza.nezami.model.entity.VideoEntity
 import alireza.nezami.model.data.VideoHitDto
 import alireza.nezami.network.data_source.VideoDataSource
@@ -11,9 +12,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
 class VideoRepositoryImpl @Inject constructor(
         private val videoSynchronizer: VideoSynchronizer,
         private val remoteDataSource: VideoDataSource

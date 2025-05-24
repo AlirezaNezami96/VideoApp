@@ -1,8 +1,8 @@
 package alireza.nezami.videoapp.main
 
-import alireza.nezami.data.util.ConnectivityManagerNetworkMonitor
-import alireza.nezami.data.util.NetworkMonitor
 import alireza.nezami.designsystem.theme.VideoAppTheme
+import alireza.nezami.domain.util.ConnectivityManagerNetworkMonitor
+import alireza.nezami.domain.util.NetworkMonitor
 import alireza.nezami.videoapp.ui.DefaultScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity

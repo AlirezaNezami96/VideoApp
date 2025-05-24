@@ -1,6 +1,7 @@
 package alireza.nezami.data.repository
 
 import alireza.nezami.database.dao.BookmarkDao
+import alireza.nezami.domain.repository.BookmarkRepository
 import alireza.nezami.model.entity.BookmarkEntity
 import javax.inject.Inject
 

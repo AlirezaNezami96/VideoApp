@@ -1,9 +1,9 @@
 package alireza.nezami.videoapp.ui
 
-import alireza.nezami.data.util.NetworkMonitor
 import alireza.nezami.designsystem.R
 import alireza.nezami.designsystem.component.NavigationBarItem
 import alireza.nezami.designsystem.component.TopAppBar
+import alireza.nezami.domain.util.NetworkMonitor
 import alireza.nezami.videoapp.navigation.AppNavHost
 import alireza.nezami.videoapp.navigation.TopLevelDestination
 import androidx.compose.foundation.background

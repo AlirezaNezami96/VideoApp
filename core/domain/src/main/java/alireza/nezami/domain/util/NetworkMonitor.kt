@@ -1,4 +1,4 @@
-package alireza.nezami.data.util
+package alireza.nezami.domain.util
 
 import kotlinx.coroutines.flow.Flow
 

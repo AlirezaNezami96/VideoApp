@@ -1,7 +1,6 @@
-package alireza.nezami.data.repository
+package alireza.nezami.domain.repository
 
 import alireza.nezami.model.entity.BookmarkEntity
-import kotlinx.coroutines.flow.Flow
 
 interface BookmarkRepository {
     suspend fun getAllBookmarks(): List<BookmarkEntity>
