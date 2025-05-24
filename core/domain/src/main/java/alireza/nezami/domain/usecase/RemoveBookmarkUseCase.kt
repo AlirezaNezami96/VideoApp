@@ -1,6 +1,6 @@
 package alireza.nezami.domain.usecase
 
-import alireza.nezami.data.repository.BookmarkRepository
+import alireza.nezami.domain.repository.BookmarkRepository
 import javax.inject.Inject
 
 class RemoveBookmarkUseCase @Inject constructor(

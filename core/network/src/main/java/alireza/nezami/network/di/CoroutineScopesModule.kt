@@ -18,17 +18,19 @@ annotation class ApplicationScope
 
 @Module
 @InstallIn(SingletonComponent::class)
-object CoroutineScopesModule {
-    @Provides
-    @Singleton
-    @ApplicationScope
-    fun providesCoroutineScope(
-        @Dispatcher(Dispatchers.Default) dispatcher: CoroutineDispatcher,
-    ): CoroutineScope = CoroutineScope(SupervisorJob() + dispatcher)
+class CoroutineScopesModule private constructor() {
+    companion object {
+        @Provides
+        @Singleton
+        @ApplicationScope
+        fun providesCoroutineScope(
+            @Dispatcher(Dispatchers.Default) dispatcher: CoroutineDispatcher,
+        ): CoroutineScope = CoroutineScope(SupervisorJob() + dispatcher)
 
-    @Provides
-    @Singleton
-    fun providesGlobalCoroutineScope(
-        @ApplicationScope coroutineScope: CoroutineScope,
-    ): CoroutineScope = coroutineScope
+        @Provides
+        @Singleton
+        fun providesGlobalCoroutineScope(
+            @ApplicationScope coroutineScope: CoroutineScope,
+        ): CoroutineScope = coroutineScope
+    }
 }
