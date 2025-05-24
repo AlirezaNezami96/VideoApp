@@ -11,7 +11,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class VideoRepositoryImpl @Inject constructor(
         private val videoSynchronizer: VideoSynchronizer,
         private val remoteDataSource: VideoDataSource
@@ -76,3 +78,4 @@ class VideoRepositoryImpl @Inject constructor(
     override suspend fun getVideoById(id: Int): Flow<List<VideoHitDto>> =
         remoteDataSource.getVideoById(id).map { response -> response.hits.orEmpty() }
 }
+

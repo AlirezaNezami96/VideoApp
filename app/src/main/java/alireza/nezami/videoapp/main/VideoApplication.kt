@@ -4,9 +4,10 @@ import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 import timber.log.Timber.DebugTree
+import javax.inject.Inject
 
 @HiltAndroidApp
-class MovieApplication : Application() {
+class VideoApplication @Inject constructor() : Application() {
 
     override fun onCreate() {
         super.onCreate()
