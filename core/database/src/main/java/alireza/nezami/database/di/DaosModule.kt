@@ -12,12 +12,12 @@ import dagger.hilt.components.SingletonComponent
 @InstallIn(SingletonComponent::class)
 object DaosModule {
     @Provides
-    fun providesFavoriteDao(
+    fun provideVideosDao(
             database: VideoAppDatabase,
     ): VideoDao = database.videoDao()
 
     @Provides
-    fun providesGenreDao(
+    fun providesBookmarkDao(
             database: VideoAppDatabase,
     ): BookmarkDao = database.bookmarkDao()
 
