@@ -15,7 +15,7 @@ data class HomesUiState(
         val latestVideoState: VideoState = VideoState(),
         val popularVideoState: VideoState = VideoState(),
 
-        val selectedTabIndex: Int = HomeTabState.Latest.index,
+        val selectedTabIndex: Int = HomeTabState.Popular.index,
 
         ) : Parcelable {
 
@@ -29,6 +29,8 @@ data class HomesUiState(
         data class PopularLoading(val show: Boolean) : PartialState()
 
         data class ChangeTab(val selectedTabIndex: Int) : PartialState()
+
+        data class UpdateBookmark(val video: VideoHitDM) : PartialState()
 
     }
 }

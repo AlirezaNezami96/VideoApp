@@ -1,5 +1,6 @@
 package alireza.nezami.data.repository
 
+import alireza.nezami.data.util.LatestVideoSynchronizer
 import alireza.nezami.data.util.SynchronizationState
 import alireza.nezami.data.util.PopularVideoSynchronizer
 import alireza.nezami.domain.repository.VideoRepository
@@ -15,7 +16,7 @@ import javax.inject.Inject
 
 class VideoRepositoryImpl @Inject constructor(
         private val popularVideoSynchronizer: PopularVideoSynchronizer,
-        private val latestVideoSynchronizer: PopularVideoSynchronizer,
+        private val latestVideoSynchronizer: LatestVideoSynchronizer,
         private val remoteDataSource: VideoDataSource
 ) : VideoRepository {
     override suspend fun getPopularVideos(

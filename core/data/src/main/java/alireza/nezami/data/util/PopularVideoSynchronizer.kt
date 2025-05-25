@@ -1,5 +1,6 @@
 package alireza.nezami.data.util
 
+import alireza.nezami.database.dao.BookmarkDao
 import alireza.nezami.database.dao.VideoDao
 import alireza.nezami.model.data.VideoOrder
 import alireza.nezami.network.data_source.VideoDataSource
@@ -13,7 +14,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class PopularVideoSynchronizer @Inject constructor(
-        private val localDataSource: VideoDao,
+        private val localVideoDataSource: VideoDao,
+        private val localBookmarkDataSource: BookmarkDao,
         private val remoteDataSource: VideoDataSource,
         private val coroutineScope: CoroutineScope,
         private val mapper: VideoMapper,
@@ -37,37 +39,48 @@ class PopularVideoSynchronizer @Inject constructor(
     private suspend fun synchronize() {
         synchronizationState.value = SynchronizationState.InProgress
 
-        try { // Get current bookmarked IDs first
-            val bookmarkedIds =
-                localDataSource.getAllPopularVideos().first().filter { it.isBookmarked }
-                    .map { it.id }
+        try {
+            val localVideos = localVideoDataSource.getAllPopularVideos().first()
+            val localBookmarks = localBookmarkDataSource.getAllBookmarks().first()
+            val bookmarkedIds = localBookmarks.map { it.id }
 
-            // Clear existing popular videos
-            localDataSource.deleteVideosByType(VideoOrder.POPULAR.value)
 
-            // Fetch and save new data
+            if (bookmarkedIds.isNotEmpty()) {
+                localVideos.forEach { video ->
+                    if (bookmarkedIds.contains(video.id)) {
+                        video.isBookmarked = true
+                    }
+                }
+            }
+
+            if (localVideos.isNotEmpty()) {
+                synchronizationState.value = SynchronizationState.Success(localVideos)
+            }
+
             remoteDataSource.getPopularVideos(page = 1, perPage = 20).catch {
-                synchronizationState.value =
-                    SynchronizationState.Error("Failed to fetch remote data")
+                if (localVideos.isEmpty()) {
+                    synchronizationState.value =
+                        SynchronizationState.Error("Failed to fetch remote data")
+                }
             }.collect { remoteData ->
                 if (remoteData.hits?.isNotEmpty() == true) {
                     val mappedData = mapper.mapToEntities(
                         videoResponses = remoteData.hits.orEmpty(), order = VideoOrder.POPULAR
                     )
 
-                    // Save to local database
-                    localDataSource.insertVideos(mappedData)
+                    localVideoDataSource.deleteVideosByType(VideoOrder.POPULAR.value)
+                    localVideoDataSource.insertVideos(mappedData)
 
-                    // Restore bookmark status
                     if (bookmarkedIds.isNotEmpty()) {
-                        localDataSource.updateBookmarkedStatus(bookmarkedIds)
+                        mappedData.forEach { video ->
+                            if (bookmarkedIds.contains(video.id)) {
+                                video.isBookmarked = true
+                            }
+                        }
                     }
 
-                    // Emit updated data
-                    synchronizationState.value = SynchronizationState.Success(
-                        localDataSource.getAllPopularVideos().first()
-                    )
-                } else {
+                    synchronizationState.value = SynchronizationState.Success(mappedData)
+                } else if (localVideos.isEmpty()) {
                     synchronizationState.value = SynchronizationState.Error("No data available")
                 }
             }

@@ -18,11 +18,11 @@ class MainActivityViewModel @Inject constructor(
         private val getPopularVideosUseCase: GetPopularVideosUseCase,
 ) : ViewModel() {
     init {
-        getPopularList()
+//        getPopularList()
     }
 
     val uiState: MutableStateFlow<MainActivityUiState> =
-        MutableStateFlow(MainActivityUiState.Loading)
+        MutableStateFlow(MainActivityUiState.Success(emptyList()))
 
     private fun getPopularList() {
         viewModelScope.launch {

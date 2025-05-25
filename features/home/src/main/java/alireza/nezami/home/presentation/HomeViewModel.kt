@@ -3,8 +3,10 @@ package alireza.nezami.home.presentation
 import alireza.nezami.common.utils.base.BaseViewModel
 import alireza.nezami.common.utils.result.Result
 import alireza.nezami.common.utils.result.asResult
+import alireza.nezami.domain.usecase.AddBookmarkUseCase
 import alireza.nezami.domain.usecase.GetLatestVideosUseCase
 import alireza.nezami.domain.usecase.GetPopularVideosUseCase
+import alireza.nezami.domain.usecase.RemoveBookmarkUseCase
 import alireza.nezami.home.presentation.contract.HomeEvent
 import alireza.nezami.home.presentation.contract.HomeIntent
 import alireza.nezami.home.presentation.contract.HomeTabState
@@ -26,13 +28,15 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
         savedStateHandle: SavedStateHandle,
         private val getLatestVideosUseCase: GetLatestVideosUseCase,
-        private val getPopularVideosUseCase: GetPopularVideosUseCase
+        private val getPopularVideosUseCase: GetPopularVideosUseCase,
+        private val addBookmarkUseCase: AddBookmarkUseCase,
+        private val removeBookmarkUseCase: RemoveBookmarkUseCase
 ) : BaseViewModel<HomesUiState, HomesUiState.PartialState, HomeEvent, HomeIntent>(
     savedStateHandle, HomesUiState()
 ) {
 
     init {
-        acceptIntent(HomeIntent.GetPopular(uiState.value.popularVideoState.page))
+        acceptIntent(HomeIntent.GetPopularVideos(uiState.value.popularVideoState.page))
     }
 
     override fun mapIntents(intent: HomeIntent): Flow<HomesUiState.PartialState> = when (intent) {
@@ -42,11 +46,11 @@ class HomeViewModel @Inject constructor(
         }
 
 
-        is HomeIntent.GetPopular -> getPopularVideos(
+        is HomeIntent.GetPopularVideos -> getPopularVideos(
             intent.page ?: uiState.value.popularVideoState.nextPage
         )
 
-        is HomeIntent.GetLatest -> getLatestVideos(
+        is HomeIntent.GetLatestVideos -> getLatestVideos(
             intent.page ?: uiState.value.latestVideoState.nextPage
         )
 
@@ -59,7 +63,12 @@ class HomeViewModel @Inject constructor(
             publishEvent(HomeEvent.NavigateToSearch)
             emptyFlow()
         }
+
+        is HomeIntent.OnBookmarkClick -> markVideoAsBookmarked(
+            intent.video
+        )
     }
+
 
     override fun reduceUiState(
             previousState: HomesUiState, partialState: HomesUiState.PartialState
@@ -110,6 +119,23 @@ class HomeViewModel @Inject constructor(
             selectedTabIndex = partialState.selectedTabIndex
         )
 
+        is HomesUiState.PartialState.UpdateBookmark -> {
+            if (previousState.selectedTabIndex == HomeTabState.Popular.index) {
+                previousState.copy(
+                    popularVideos = previousState.popularVideos.map {
+                        if (it.id == partialState.video.id) it.copy(isBookmarked = !it.isBookmarked)
+                        else it
+                    })
+            } else if (previousState.selectedTabIndex == HomeTabState.Latest.index) {
+                previousState.copy(
+                    latestVideos = previousState.latestVideos.map {
+                        if (it.id == partialState.video.id) it.copy(isBookmarked = !it.isBookmarked)
+                        else it
+                    })
+            } else {
+                previousState
+            }
+        }
     }
 
 
@@ -117,11 +143,11 @@ class HomeViewModel @Inject constructor(
         with(uiState.value) {
             when {
                 selectedTabIndex == HomeTabState.Popular.index && popularVideos.isEmpty() -> {
-                    acceptIntent(HomeIntent.GetPopular(uiState.value.popularVideoState.page))
+                    acceptIntent(HomeIntent.GetPopularVideos(uiState.value.popularVideoState.page))
                 }
 
                 selectedTabIndex == HomeTabState.Latest.index && latestVideos.isEmpty() -> {
-                    acceptIntent(HomeIntent.GetLatest(uiState.value.latestVideoState.page))
+                    acceptIntent(HomeIntent.GetLatestVideos(uiState.value.latestVideoState.page))
                 }
 
 
@@ -141,35 +167,51 @@ class HomeViewModel @Inject constructor(
 
 
     private fun getPopularVideos(page: Int): Flow<HomesUiState.PartialState> = flow {
-        getPopularVideosUseCase(page)
-            .asResult()
-            .map {
-                when (it) {
-                    is Result.Error -> emit(HomesUiState.PartialState.PopularError(it.exception?.message.orEmpty()))
-                    Result.Loading -> emit(HomesUiState.PartialState.PopularLoading(true))
-                    is Result.Success -> emit(HomesUiState.PartialState.AddPopularVideos(it.data))
-                }
+        getPopularVideosUseCase(page).asResult().map {
+            when (it) {
+                is Result.Error -> emit(HomesUiState.PartialState.PopularError(it.exception?.message.orEmpty()))
+                Result.Loading -> emit(HomesUiState.PartialState.PopularLoading(true))
+                is Result.Success -> emit(HomesUiState.PartialState.AddPopularVideos(it.data))
             }
-            .catch {
-                emit(HomesUiState.PartialState.PopularError(it.message.orEmpty()))
-            }
-            .collect()
+        }.catch {
+            emit(HomesUiState.PartialState.PopularError(it.message.orEmpty()))
+        }.collect()
     }
 
     private fun getLatestVideos(page: Int): Flow<HomesUiState.PartialState> = flow {
-        getLatestVideosUseCase(page)
-            .asResult()
-            .map {
+        getLatestVideosUseCase(page).asResult().map {
+            when (it) {
+                is Result.Error -> emit(HomesUiState.PartialState.LatestError(it.exception?.message.orEmpty()))
+                Result.Loading -> emit(HomesUiState.PartialState.LatestLoading(true))
+                is Result.Success -> emit(HomesUiState.PartialState.AddLatestVideos(it.data))
+            }
+        }.catch {
+            emit(HomesUiState.PartialState.LatestError(it.message.orEmpty()))
+        }.collect()
+    }
+
+    private fun markVideoAsBookmarked(
+            video: VideoHitDM
+    ): Flow<HomesUiState.PartialState> = flow {
+        if (video.isBookmarked) {
+            removeBookmarkUseCase(video.id).asResult().map {
                 when (it) {
-                    is Result.Error -> emit(HomesUiState.PartialState.LatestError(it.exception?.message.orEmpty()))
-                    Result.Loading -> emit(HomesUiState.PartialState.LatestLoading(true))
-                    is Result.Success -> emit(HomesUiState.PartialState.AddLatestVideos(it.data))
+                    is Result.Success -> emit(HomesUiState.PartialState.UpdateBookmark(video))
+                    else -> {}
                 }
-            }
-            .catch {
+            }.catch {
                 emit(HomesUiState.PartialState.LatestError(it.message.orEmpty()))
-            }
-            .collect()
+            }.collect()
+        } else {
+            addBookmarkUseCase(video).asResult().map {
+                when (it) {
+                    is Result.Success -> emit(HomesUiState.PartialState.UpdateBookmark(video))
+                    else -> {}
+                }
+            }.catch {
+                emit(HomesUiState.PartialState.LatestError(it.message.orEmpty()))
+            }.collect()
+        }
     }
 
 

@@ -14,11 +14,11 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface VideoDao {
     @Transaction
-    @Query(value = "SELECT * FROM videos WHERE type = 'POPULAR'")
+    @Query(value = "SELECT * FROM videos WHERE `order` = 'POPULAR'")
     fun getAllPopularVideos(): Flow<List<VideoEntity>>
 
     @Transaction
-    @Query(value = "SELECT * FROM videos WHERE type = 'LATEST'")
+    @Query(value = "SELECT * FROM videos WHERE `order` = 'LATEST'")
     fun getAllLatestVideos(): Flow<List<VideoEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -27,9 +27,4 @@ interface VideoDao {
     @Query("DELETE FROM videos WHERE type = :type")
     suspend fun deleteVideosByType(type: String)
 
-    @Query("UPDATE videos SET isBookmarked = 1 WHERE id IN (:ids)")
-    suspend fun updateBookmarkedStatus(ids: List<Int>)
-
-    @Query("DELETE FROM bookmarks WHERE id = :id")
-    suspend fun deleteBookmark(id: Int)
 }

@@ -1,5 +1,6 @@
-package alireza.nezami.videoapp.navigation
+package alireza.nezami.home.navigation
 
+import alireza.nezami.home.presentation.HomeScreen
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
@@ -19,6 +20,9 @@ fun NavGraphBuilder.homeScreen(
     composable(
         route = homeNavigationRoute,
     ) {
-        //todo: add
+        HomeScreen(
+            onVideoClick = onVideoClick,
+            onSearchClick = onSearchClick,
+        )
     }
 }

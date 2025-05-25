@@ -2,8 +2,9 @@ package alireza.nezami.data.di
 
 import alireza.nezami.data.repository.BookmarkRepositoryImpl
 import alireza.nezami.data.util.LatestVideoSynchronizer
-import alireza.nezami.data.util.VideoMapper
 import alireza.nezami.data.util.PopularVideoSynchronizer
+import alireza.nezami.data.util.VideoMapper
+import alireza.nezami.database.dao.BookmarkDao
 import alireza.nezami.database.dao.VideoDao
 import alireza.nezami.domain.repository.BookmarkRepository
 import alireza.nezami.network.data_source.VideoDataSource
@@ -22,34 +23,42 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 class DataModule private constructor() {
-        companion object {
-                @Provides
-                @Singleton
-                fun provideBookmarkRepository(repository: BookmarkRepositoryImpl): BookmarkRepository =
-                        repository
+    companion object {
+        @Provides
+        @Singleton
+        fun provideBookmarkRepository(repository: BookmarkRepositoryImpl): BookmarkRepository =
+            repository
 
-                @Provides
-                @Singleton
-                fun providePopularVideoSynchronizer(
-                        localDataSource: VideoDao,
-                        remoteDataSource: VideoDataSource,
-                        @ApplicationScope coroutineScope: CoroutineScope,
-                        mapper: VideoMapper,
-                ): PopularVideoSynchronizer =
-                        PopularVideoSynchronizer(localDataSource, remoteDataSource, coroutineScope, mapper)
+        @Provides
+        @Singleton
+        fun providePopularVideoSynchronizer(
+                localBookmarkDataSource: BookmarkDao,
+                localDataSource: VideoDao,
+                remoteDataSource: VideoDataSource,
+                @ApplicationScope coroutineScope: CoroutineScope,
+                mapper: VideoMapper,
+        ): PopularVideoSynchronizer = PopularVideoSynchronizer(
+            localDataSource, localBookmarkDataSource, remoteDataSource, coroutineScope, mapper
+        )
 
-                @Provides
-                @Singleton
-                fun provideLatestVideoSynchronizer(
-                        localDataSource: VideoDao,
-                        remoteDataSource: VideoDataSource,
-                        @ApplicationScope coroutineScope: CoroutineScope,
-                        mapper: VideoMapper,
-                ): LatestVideoSynchronizer =
-                        LatestVideoSynchronizer(localDataSource, remoteDataSource, coroutineScope, mapper)
+        @Provides
+        @Singleton
+        fun provideLatestVideoSynchronizer(
+                localBookmarkDataSource: BookmarkDao,
+                localDataSource: VideoDao,
+                remoteDataSource: VideoDataSource,
+                @ApplicationScope coroutineScope: CoroutineScope,
+                mapper: VideoMapper,
+        ): LatestVideoSynchronizer = LatestVideoSynchronizer(
+            localDataSource,
+            localBookmarkDataSource,
+            remoteDataSource,
+            coroutineScope,
+            mapper
+        )
 
-                @Provides
-                @Singleton
-                fun provideVideoMapper(): VideoMapper = VideoMapper()
-        }
+        @Provides
+        @Singleton
+        fun provideVideoMapper(): VideoMapper = VideoMapper()
+    }
 }
