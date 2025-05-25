@@ -5,10 +5,11 @@ import alireza.nezami.model.entity.VideoFileEntity
 import alireza.nezami.model.entity.VideoVariantsEntity
 import alireza.nezami.model.data.VideoFileDto
 import alireza.nezami.model.data.VideoHitDto
+import alireza.nezami.model.data.VideoOrder
 import javax.inject.Inject
 
 class VideoMapper @Inject constructor() {
-    fun mapToEntities(videoResponses: List<VideoHitDto>): List<VideoEntity> {
+    fun mapToEntities(videoResponses: List<VideoHitDto>, order: VideoOrder): List<VideoEntity> {
         return videoResponses.map { response ->
             VideoEntity(
                 id = response.id ?: 0,
@@ -31,7 +32,8 @@ class VideoMapper @Inject constructor() {
                 userId = response.user_id ?: 0,
                 user = response.user.orEmpty(),
                 userImageURL = response.userImageURL.orEmpty(),
-                isBookmarked = false
+                isBookmarked = false,
+                order = order
             )
         }
     }

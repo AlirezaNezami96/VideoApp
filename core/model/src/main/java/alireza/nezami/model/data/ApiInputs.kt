@@ -1,4 +1,4 @@
-package alireza.nezami.network.model
+package alireza.nezami.model.data
 
 enum class VideoLanguage(val code: String) {
     CZECH("cs"),

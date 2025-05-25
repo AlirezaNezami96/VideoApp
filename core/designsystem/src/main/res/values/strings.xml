@@ -7,4 +7,7 @@
     <string name="find_videos_by_title">"Find your video by Type title, categories, etc "</string>
     <string name="video_result_was_empty">we are sorry, we can not find the video :(</string>
     <string name="not_connected">⚠️ You aren’t connected to the internet</string>
+    <string name="nothing_left_to_show">There is nothing to show!</string>
+    <string name="popular">Popular</string>
+    <string name="latest">Latest</string>
 </resources>

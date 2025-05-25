@@ -1,11 +1,11 @@
 package alireza.nezami.videoapp.ui
 
 import alireza.nezami.domain.util.NetworkMonitor
+import alireza.nezami.home.navigation.homeNavigationRoute
+import alireza.nezami.home.navigation.navigateToHome
 import alireza.nezami.videoapp.navigation.TopLevelDestination
 import alireza.nezami.videoapp.navigation.bookmarkNavigationRoute
-import alireza.nezami.videoapp.navigation.homeNavigationRoute
 import alireza.nezami.videoapp.navigation.navigateToBookmark
-import alireza.nezami.videoapp.navigation.navigateToHome
 import alireza.nezami.videoapp.navigation.navigateToSearch
 import alireza.nezami.videoapp.navigation.searchNavigationRoute
 import androidx.compose.runtime.Composable

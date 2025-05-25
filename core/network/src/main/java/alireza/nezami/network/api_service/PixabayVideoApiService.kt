@@ -1,7 +1,6 @@
 package alireza.nezami.network.api_service
 
 import alireza.nezami.model.data.VideoResponseDto
-import alireza.nezami.network.di.Config.API_KEY
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -9,7 +8,7 @@ interface PixabayVideoApiService {
 
     @GET("videos/")
     suspend fun getLatestVideos(
-            @Query("key") apiKey: String = API_KEY,
+            @Query("key") apiKey: String ,
             @Query("order") order: String = "latest",
             @Query("lang") lang: String = "en",
             @Query("video_type") videoType: String = "all",
@@ -21,7 +20,7 @@ interface PixabayVideoApiService {
 
     @GET("videos/")
     suspend fun getPopularVideos(
-            @Query("key") apiKey: String = API_KEY,
+            @Query("key") apiKey: String,
             @Query("order") order: String = "popular",
             @Query("lang") lang: String = "en",
             @Query("video_type") videoType: String = "all",
@@ -33,7 +32,7 @@ interface PixabayVideoApiService {
 
     @GET("videos/")
     suspend fun getVideoById(
-            @Query("key") apiKey: String = API_KEY,
+            @Query("key") apiKey: String,
             @Query("id") id: Int,
             @Query("lang") lang: String = "en",
             @Query("video_type") videoType: String = "all",
@@ -43,7 +42,7 @@ interface PixabayVideoApiService {
 
     @GET("videos/")
     suspend fun searchVideo(
-            @Query("key") apiKey: String = API_KEY,
+            @Query("key") apiKey: String,
             @Query("q") query: String,
             @Query("lang") lang: String = "en",
             @Query("video_type") videoType: String = "all",

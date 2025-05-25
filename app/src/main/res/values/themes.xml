@@ -3,7 +3,7 @@
 
     <style name="Theme.VideoApp" parent="android:Theme.Material.Light.NoActionBar" />
 
-    <style name="Theme.MovieApp.Splash" parent="Theme.SplashScreen">
+    <style name="Theme.VideoApp.Splash" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">#242A32</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_bookmark_no_result</item>
     </style>

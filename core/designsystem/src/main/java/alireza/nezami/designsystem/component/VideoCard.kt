@@ -1,15 +1,14 @@
 package alireza.nezami.designsystem.component
 
 import alireza.nezami.designsystem.R
-import alireza.nezami.designsystem.theme.VideoAppTheme
+import alireza.nezami.model.domain.VideoVariantsDM
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,6 +16,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -34,26 +35,26 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun VideoCard(
         modifier: Modifier = Modifier,
-        thumbnail: String,
+        videos: VideoVariantsDM?,
         userName: String,
         userAvatar: String,
         isBookmarked: Boolean,
-        height: Double,
         tagsList: List<String>,
-        onVideoCardClick: () -> Unit
+        onVideoCardClick: () -> Unit,
+        onBookmarkClick: () -> Unit
 ) {
-
+    val thumbnailHeight = ThumbnailSelector.calculateThumbnailHeight(videos)
+    val thumbnail = ThumbnailSelector.selectThumbnail(videos).url
 
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(16.dp)
             .clickable {
                 onVideoCardClick()
             }, shape = MaterialTheme.shapes.medium, colors = CardDefaults.cardColors()
@@ -65,7 +66,7 @@ fun VideoCard(
             DynamicAsyncImage(
                 contentDescription = "Video Poster",
                 modifier = Modifier
-                    .height(height.dp)
+                    .height(thumbnailHeight)
                     .fillMaxWidth()
                     .clip(shape = MaterialTheme.shapes.medium),
                 imageUrl = thumbnail
@@ -81,7 +82,7 @@ fun VideoCard(
                 Icon(
                     painter = painterResource(id = R.drawable.ic_play_video),
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.surface,
+                    tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier
                         .align(Alignment.Center)
                         .size(40.dp)
@@ -93,8 +94,8 @@ fun VideoCard(
                 modifier = Modifier
                     .align(Alignment.TopStart)
                     .background(
-                        Color.Black.copy(alpha = 0.4f),
-                        RoundedCornerShape(bottomEnd = 8.dp, topStart = 16.dp)
+                        Color.Black.copy(alpha = 0.5f),
+                        RoundedCornerShape(bottomEnd = 8.dp, topStart = 8.dp)
                     )
             ) {
                 UserParts(
@@ -102,7 +103,6 @@ fun VideoCard(
                     userAvatar = userAvatar,
                 )
             }
-
 
             Row(
                 modifier = Modifier
@@ -139,9 +139,12 @@ fun VideoCard(
                 Icon(
                     painter = painterResource(bookmarkIcon),
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.surface,
+                    tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier
                         .padding(horizontal = 16.dp)
+                        .clickable {
+                            onBookmarkClick()
+                        }
                         .size(24.dp)
                 )
 
@@ -151,13 +154,13 @@ fun VideoCard(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun TagsList(tagsList: List<String>) {
-    FlowRow(
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    LazyRow(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(horizontal = 8.dp)
     ) {
-        tagsList.forEach { tag ->
+        items(tagsList) { tag ->
             Text(
                 text = tag,
                 modifier = Modifier
@@ -165,12 +168,12 @@ fun TagsList(tagsList: List<String>) {
                     .background(Color.Transparent)
                     .border(
                         width = 1.dp,
-                        color = MaterialTheme.colorScheme.surface,
+                        color = MaterialTheme.colorScheme.onSurface,
                         shape = MaterialTheme.shapes.small
                     )
                     .padding(horizontal = 6.dp, vertical = 4.dp),
-                style = MaterialTheme.typography.labelSmall.copy(
-                    color = MaterialTheme.colorScheme.background
+                style = MaterialTheme.typography.labelLarge.copy(
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             )
         }
@@ -187,7 +190,8 @@ fun UserParts(userName: String, userAvatar: String) {
     Row(
         verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(8.dp)
     ) {
-        DynamicAsyncImage(imageUrl = userAvatar,
+        DynamicAsyncImage(
+            imageUrl = userAvatar,
             contentDescription = "User Avatar",
             modifier = Modifier
                 .size(24.dp)
@@ -205,23 +209,12 @@ fun UserParts(userName: String, userAvatar: String) {
                 .clip(RoundedCornerShape(50)))
         Spacer(modifier = Modifier.width(8.dp))
         Text(
-            text = userName, style = MaterialTheme.typography.bodySmall.copy(
-                color = MaterialTheme.colorScheme.surface, fontWeight = FontWeight.SemiBold
+            text = userName,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            style = MaterialTheme.typography.bodySmall.copy(
+                color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.SemiBold
             )
         )
-    }
-}
-
-@Preview
-@Composable
-fun VideoCardPreview() {
-    VideoAppTheme {
-        VideoCard(thumbnail = "https://cdn.pixabay.com/video/2015/08/08/125-135736646_large.jpg",
-            userName = "John Doe",
-            userAvatar = "https://cdn.pixabay.com/user/2015/10/16/09-28-45-303_250x250.png",
-            height = 200.0,
-            tagsList = listOf("Action", "Adventure", "Drama"),
-            isBookmarked = false,
-            onVideoCardClick = {})
     }
 }
