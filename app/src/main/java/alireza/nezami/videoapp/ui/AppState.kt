@@ -4,8 +4,8 @@ import alireza.nezami.domain.util.NetworkMonitor
 import alireza.nezami.home.navigation.homeNavigationRoute
 import alireza.nezami.home.navigation.navigateToHome
 import alireza.nezami.videoapp.navigation.TopLevelDestination
-import alireza.nezami.videoapp.navigation.bookmarkNavigationRoute
-import alireza.nezami.videoapp.navigation.navigateToBookmark
+import alireza.nezami.bookmark.navigation.bookmarkNavigationRoute
+import alireza.nezami.bookmark.navigation.navigateToBookmark
 import alireza.nezami.search.navigation.navigateToSearch
 import alireza.nezami.search.navigation.searchNavigationRoute
 import androidx.compose.runtime.Composable
@@ -56,7 +56,7 @@ class AppState(
         @Composable get() = when (currentDestination?.route) {
             homeNavigationRoute -> TopLevelDestination.HOME
             searchNavigationRoute -> TopLevelDestination.SEARCH
-            bookmarkNavigationRoute -> TopLevelDestination.BOOKMARK
+            alireza.nezami.bookmark.navigation.bookmarkNavigationRoute -> TopLevelDestination.BOOKMARK
             else -> null
         }
 

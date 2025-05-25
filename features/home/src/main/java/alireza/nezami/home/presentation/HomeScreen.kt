@@ -24,10 +24,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -135,11 +134,12 @@ fun VideoListContent(
 ) {
     if (shown) {
         val lazyListThreshold = 6
-        val lazyGridState = rememberLazyGridState()
+        val lazyListState = rememberLazyListState()
+
         val shouldStartPaginate = remember {
             derivedStateOf {
-                (lazyGridState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
-                    ?: -9) >= (lazyGridState.layoutInfo.totalItemsCount - lazyListThreshold)
+                (lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
+                    ?: -9) >= (lazyListState.layoutInfo.totalItemsCount - lazyListThreshold)
             }
         }
 
@@ -149,10 +149,8 @@ fun VideoListContent(
 
 
 
-        LazyVerticalGrid(
-            state = lazyGridState,
-            columns = GridCells.Fixed(1),
-            contentPadding = PaddingValues(vertical = 16.dp)
+        LazyColumn(
+            state = lazyListState, contentPadding = PaddingValues(vertical = 16.dp)
         ) {
             items(
                 items = list,
