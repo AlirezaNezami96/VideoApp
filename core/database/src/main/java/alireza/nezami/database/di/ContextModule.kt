@@ -1,8 +1,6 @@
 package alireza.nezami.database.di
 
-import alireza.nezami.database.database.VideoAppDatabase
 import android.content.Context
-import androidx.room.Room
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -12,14 +10,8 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-class DatabaseModule {
+class ContextModule {
     @Provides
     @Singleton
-    fun providesDatabase(
-            @ApplicationContext context: Context,
-    ): VideoAppDatabase = Room.databaseBuilder(
-        context,
-        VideoAppDatabase::class.java,
-        "video-app-database",
-    ).build()
+    fun provideContext(@ApplicationContext context: Context): Context = context
 }

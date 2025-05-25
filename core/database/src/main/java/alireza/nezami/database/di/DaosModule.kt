@@ -10,8 +10,7 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-class DaosModule private constructor() {
-    companion object {
+class DaosModule {
         @Provides
         fun provideVideosDao(
             database: VideoAppDatabase,
@@ -21,5 +20,4 @@ class DaosModule private constructor() {
         fun providesBookmarkDao(
             database: VideoAppDatabase,
         ): BookmarkDao = database.bookmarkDao()
-    }
 }

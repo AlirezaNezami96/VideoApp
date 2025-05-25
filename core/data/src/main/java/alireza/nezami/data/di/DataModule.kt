@@ -31,18 +31,13 @@ class DataModule private constructor() {
 
                 @Provides
                 @Singleton
-                fun provideVideoRepository(
-                        videoRepositoryImpl: VideoRepositoryImpl // Changed parameter
-                ): VideoRepository = videoRepositoryImpl
-
-                @Provides
-                @Singleton
                 fun provideVideoSynchronizer(
                         localDataSource: VideoDao,
                         remoteDataSource: VideoDataSource,
                         @ApplicationScope coroutineScope: CoroutineScope,
                         mapper: VideoMapper,
-                ): VideoSynchronizer = VideoSynchronizer(localDataSource, remoteDataSource, coroutineScope, mapper)
+                ): VideoSynchronizer =
+                        VideoSynchronizer(localDataSource, remoteDataSource, coroutineScope, mapper)
 
                 @Provides
                 @Singleton
