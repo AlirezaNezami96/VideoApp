@@ -42,12 +42,20 @@ class LatestVideoSynchronizer @Inject constructor(
         try {
             val localVideos = localVideoDataSource.getAllLatestVideos().first()
             val localBookmarks = localBookmarkDataSource.getAllBookmarks().first()
+            val bookmarkedIds = localBookmarks.map { it.id }
+
+            if (bookmarkedIds.isNotEmpty()) {
+                localVideos.forEach { video ->
+                    if (bookmarkedIds.contains(video.id)) {
+                        video.isBookmarked = true
+                    }
+                }
+            }
 
             if (localVideos.isNotEmpty()) {
                 synchronizationState.value = SynchronizationState.Success(localVideos)
             }
 
-            val bookmarkedIds = localBookmarks.map { it.id }
 
             remoteDataSource.getLatestVideos(page = 1, perPage = 20).catch {
                 if (localVideos.isEmpty()) {
