@@ -1,6 +1,7 @@
-package alireza.nezami.videoapp.navigation
+package alireza.nezami.detail.navigation
 
 import alireza.nezami.common.utils.UriDecoder
+import alireza.nezami.detail.presentation.DetailScreen
 import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavController
@@ -35,6 +36,9 @@ fun NavGraphBuilder.detailScreen(
         route = "detail_route/{$videoIdArg}", arguments = listOf(
             navArgument(videoIdArg) { type = NavType.StringType },
         )
-    ) { //todo: add
+    ) {
+        DetailScreen(
+            navigateUp = navigateUp
+        )
     }
 }

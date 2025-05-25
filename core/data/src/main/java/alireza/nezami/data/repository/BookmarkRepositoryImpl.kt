@@ -10,7 +10,11 @@ import javax.inject.Inject
 class BookmarkRepositoryImpl @Inject constructor(
         private val bookmarkDao: BookmarkDao
 ) : BookmarkRepository {
-    override suspend fun getAllBookmarks(): Flow<List<BookmarkEntity>> = bookmarkDao.getAllBookmarks()
+    override suspend fun getAllBookmarks(): Flow<List<BookmarkEntity>> =
+        bookmarkDao.getAllBookmarks()
+
+    override suspend fun getBookmarkById(id: Int): Flow<BookmarkEntity?> =
+        bookmarkDao.getBookmarkById(id)
 
     override suspend fun addBookmark(bookmark: BookmarkEntity): Flow<Unit> = flow {
         bookmarkDao.insertBookmark(bookmark)

@@ -10,4 +10,5 @@
     <string name="nothing_left_to_show">There is nothing to show!</string>
     <string name="popular">Popular</string>
     <string name="latest">Latest</string>
+    <string name="detail">Detail</string>
 </resources>

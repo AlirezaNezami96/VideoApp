@@ -75,17 +75,18 @@ fun VideoCard(
             Box(
                 modifier = Modifier
                     .align(Alignment.Center)
+                    .size(40.dp)
                     .background(
-                        Color.Black.copy(alpha = 0.6f), MaterialTheme.shapes.extraLarge
+                        Color.Black.copy(alpha = 0.7f), MaterialTheme.shapes.extraLarge
                     )
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_play_video),
+                    painter = painterResource(id = R.drawable.ic_video),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier
                         .align(Alignment.Center)
-                        .size(40.dp)
+                        .size(32.dp)
                         .padding(8.dp)
                 )
             }
@@ -145,8 +146,7 @@ fun VideoCard(
                         .clickable {
                             onBookmarkClick()
                         }
-                        .size(24.dp)
-                )
+                        .size(24.dp))
 
             }
 
