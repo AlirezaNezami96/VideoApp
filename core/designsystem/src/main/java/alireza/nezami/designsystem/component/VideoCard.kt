@@ -110,9 +110,9 @@ fun VideoCard(
                     .background(
                         Brush.verticalGradient(
                             listOf(
-                                Color.Black.copy(alpha = 0.3f),
-                                Color.Black.copy(alpha = 0.4f),
                                 Color.Black.copy(alpha = 0.5f),
+                                Color.Black.copy(alpha = 0.6f),
+                                Color.Black.copy(alpha = 0.7f),
                             )
                         )
                     )

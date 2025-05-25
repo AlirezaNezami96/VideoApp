@@ -1,5 +1,6 @@
-package alireza.nezami.videoapp.navigation
+package alireza.nezami.bookmark.navigation
 
+import alireza.nezami.bookmark.presentation.BookmarkScreen
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
@@ -12,12 +13,13 @@ fun NavController.navigateToBookmark(navOptions: NavOptions? = null) {
 }
 
 fun NavGraphBuilder.bookmarkScreen(
-        onVideoClick: (Int) -> Unit,
-        onShowSnackbar: suspend (String, String?) -> Boolean
+        onVideoClick: (Int) -> Unit, onShowSnackbar: suspend (String, String?) -> Boolean
 ) {
     composable(
         route = bookmarkNavigationRoute,
     ) {
-        //todo: add
+        BookmarkScreen(
+            onVideoClick = onVideoClick
+        )
     }
 }

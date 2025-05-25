@@ -1,5 +1,6 @@
 package alireza.nezami.videoapp.navigation
 
+import alireza.nezami.bookmark.navigation.bookmarkScreen
 import alireza.nezami.home.navigation.homeNavigationRoute
 import alireza.nezami.home.navigation.homeScreen
 import alireza.nezami.search.navigation.navigateToSearch
@@ -28,7 +29,8 @@ fun AppNavHost(
         startDestination = startDestination,
         modifier = modifier,
     ) {
-        homeScreen(onVideoClick = navController::navigateToDetail,
+        homeScreen(
+            onVideoClick = navController::navigateToDetail,
             onShowSnackbar = onShowSnackbar,
             onSearchClick = {
                 navController.navigateToSearch()

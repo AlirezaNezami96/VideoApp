@@ -13,10 +13,8 @@ import alireza.nezami.search.presentation.contract.SearchEvent
 import alireza.nezami.search.presentation.contract.SearchIntent
 import alireza.nezami.search.presentation.contract.SearchUiState
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -25,8 +23,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
@@ -130,15 +126,12 @@ class SearchViewModel @Inject constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun searchVideos(
-            page: Int,
-            query: StateFlow<String>
+            page: Int, query: StateFlow<String>
     ): Flow<SearchUiState.PartialState> = channelFlow {
         searchJob?.cancel()
         searchJob = launch {
             delay(500)
-            query
-                .filter { newQuery -> newQuery.isNotBlank() }
-                .flatMapLatest { newQuery ->
+            query.filter { newQuery -> newQuery.isNotBlank() }.flatMapLatest { newQuery ->
                     searchVideosUseCase(page = page, query = newQuery).asResult().map {
                         when (it) {
                             is Result.Error -> send(
@@ -146,9 +139,11 @@ class SearchViewModel @Inject constructor(
                                     it.exception?.message.orEmpty()
                                 )
                             )
+
                             Result.Loading -> send(
                                 SearchUiState.PartialState.SearchResultLoading(true)
                             )
+
                             is Result.Success -> send(
                                 SearchUiState.PartialState.AddSearchResult(it.data)
                             )
