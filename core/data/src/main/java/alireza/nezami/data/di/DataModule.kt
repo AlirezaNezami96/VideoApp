@@ -1,12 +1,11 @@
 package alireza.nezami.data.di
 
 import alireza.nezami.data.repository.BookmarkRepositoryImpl
-import alireza.nezami.data.repository.VideoRepositoryImpl
+import alireza.nezami.data.util.LatestVideoSynchronizer
 import alireza.nezami.data.util.VideoMapper
-import alireza.nezami.data.util.VideoSynchronizer
+import alireza.nezami.data.util.PopularVideoSynchronizer
 import alireza.nezami.database.dao.VideoDao
 import alireza.nezami.domain.repository.BookmarkRepository
-import alireza.nezami.domain.repository.VideoRepository
 import alireza.nezami.network.data_source.VideoDataSource
 import alireza.nezami.network.di.ApplicationScope
 import dagger.Module
@@ -31,13 +30,23 @@ class DataModule private constructor() {
 
                 @Provides
                 @Singleton
-                fun provideVideoSynchronizer(
+                fun providePopularVideoSynchronizer(
                         localDataSource: VideoDao,
                         remoteDataSource: VideoDataSource,
                         @ApplicationScope coroutineScope: CoroutineScope,
                         mapper: VideoMapper,
-                ): VideoSynchronizer =
-                        VideoSynchronizer(localDataSource, remoteDataSource, coroutineScope, mapper)
+                ): PopularVideoSynchronizer =
+                        PopularVideoSynchronizer(localDataSource, remoteDataSource, coroutineScope, mapper)
+
+                @Provides
+                @Singleton
+                fun provideLatestVideoSynchronizer(
+                        localDataSource: VideoDao,
+                        remoteDataSource: VideoDataSource,
+                        @ApplicationScope coroutineScope: CoroutineScope,
+                        mapper: VideoMapper,
+                ): LatestVideoSynchronizer =
+                        LatestVideoSynchronizer(localDataSource, remoteDataSource, coroutineScope, mapper)
 
                 @Provides
                 @Singleton

@@ -67,7 +67,6 @@ dependencies {
     // Feature modules
     implementation(project(":features:home"))
     implementation(project(":features:search"))
-    implementation(project(":features:favorite"))
     implementation(project(":features:detail"))
 
     // Core modules

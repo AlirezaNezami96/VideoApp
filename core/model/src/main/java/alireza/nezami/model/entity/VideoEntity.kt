@@ -1,5 +1,6 @@
 package alireza.nezami.model.entity
 
+import alireza.nezami.model.data.VideoOrder
 import alireza.nezami.model.domain.VideoHitDM
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -21,7 +22,8 @@ data class VideoEntity(
         val userId: Int,
         val user: String,
         val userImageURL: String,
-        var isBookmarked: Boolean = false
+        var isBookmarked: Boolean = false,
+        val order: VideoOrder
 )
 
 fun VideoEntity.toDM() = VideoHitDM(

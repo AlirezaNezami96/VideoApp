@@ -1,9 +1,9 @@
 package alireza.nezami.network.data_source
 
+import alireza.nezami.model.data.ApiPageConfig
+import alireza.nezami.model.data.VideoOrder
 import alireza.nezami.model.data.VideoResponseDto
 import alireza.nezami.network.api_service.PixabayVideoApiService
-import alireza.nezami.network.model.ApiPageConfig
-import alireza.nezami.network.model.VideoOrder
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
@@ -17,6 +17,7 @@ class VideoDataSourceImpl @Inject constructor(
     override suspend fun getLatestVideos(page: Int?, perPage: Int?): Flow<VideoResponseDto> = flow {
         emit(
             apiService.getLatestVideos(
+                apiKey = "50415008-c6afa5a143fc6fbd5f7489388",
                 page = page ?: ApiPageConfig.DEFAULT_PAGE,
                 perPage = perPage ?: ApiPageConfig.DEFAULT_PER_PAGE
             )
@@ -27,6 +28,7 @@ class VideoDataSourceImpl @Inject constructor(
         flow {
             emit(
                 apiService.getPopularVideos(
+                    apiKey = "50415008-c6afa5a143fc6fbd5f7489388",
                     page = page ?: ApiPageConfig.DEFAULT_PAGE,
                     perPage = perPage ?: ApiPageConfig.DEFAULT_PER_PAGE
                 )
@@ -34,7 +36,11 @@ class VideoDataSourceImpl @Inject constructor(
         }
 
     override suspend fun getVideoById(id: Int): Flow<VideoResponseDto> = flow {
-        emit(apiService.getVideoById(id = id))
+        emit(
+            apiService.getVideoById(
+                apiKey = "50415008-c6afa5a143fc6fbd5f7489388", id = id
+            )
+        )
     }
 
     override suspend fun searchVideo(
@@ -42,6 +48,7 @@ class VideoDataSourceImpl @Inject constructor(
     ): Flow<VideoResponseDto> = flow {
         emit(
             apiService.searchVideo(
+                apiKey = "50415008-c6afa5a143fc6fbd5f7489388",
                 query = query,
                 page = page ?: ApiPageConfig.DEFAULT_PAGE,
                 perPage = perPage ?: ApiPageConfig.DEFAULT_PER_PAGE,

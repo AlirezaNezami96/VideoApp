@@ -1,7 +1,7 @@
 package alireza.nezami.data.repository
 
 import alireza.nezami.data.util.SynchronizationState
-import alireza.nezami.data.util.VideoSynchronizer
+import alireza.nezami.data.util.PopularVideoSynchronizer
 import alireza.nezami.domain.repository.VideoRepository
 import alireza.nezami.model.entity.VideoEntity
 import alireza.nezami.model.data.VideoHitDto
@@ -14,13 +14,14 @@ import kotlinx.coroutines.flow.onStart
 import javax.inject.Inject
 
 class VideoRepositoryImpl @Inject constructor(
-        private val videoSynchronizer: VideoSynchronizer,
+        private val popularVideoSynchronizer: PopularVideoSynchronizer,
+        private val latestVideoSynchronizer: PopularVideoSynchronizer,
         private val remoteDataSource: VideoDataSource
 ) : VideoRepository {
     override suspend fun getPopularVideos(
             page: Int?, perPage: Int?
     ): Flow<List<VideoEntity>> = flow {
-        val stateFlow = videoSynchronizer.synchronizationStateFlow
+        val stateFlow = popularVideoSynchronizer.synchronizationStateFlow
 
         stateFlow.collect { state ->
             when (state) {
@@ -38,15 +39,15 @@ class VideoRepositoryImpl @Inject constructor(
             }
         }
     }.onStart {
-        videoSynchronizer.startSynchronization()
+        popularVideoSynchronizer.startSynchronization()
     }.onCompletion {
-        videoSynchronizer.stopSynchronization()
+        popularVideoSynchronizer.stopSynchronization()
     }
 
     override suspend fun getLatestVideos(
             page: Int?, perPage: Int?
     ): Flow<List<VideoEntity>> = flow {
-        val stateFlow = videoSynchronizer.synchronizationStateFlow
+        val stateFlow = latestVideoSynchronizer.synchronizationStateFlow
 
         stateFlow.collect { state ->
             when (state) {
@@ -64,9 +65,9 @@ class VideoRepositoryImpl @Inject constructor(
             }
         }
     }.onStart {
-        videoSynchronizer.startSynchronization()
+        latestVideoSynchronizer.startSynchronization()
     }.onCompletion {
-        videoSynchronizer.stopSynchronization()
+        latestVideoSynchronizer.stopSynchronization()
     }
 
     override suspend fun searchVideo(

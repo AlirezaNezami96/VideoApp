@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    id("kotlin-parcelize")
+    id ("kotlin-kapt")
 }
 
 android {
@@ -49,4 +51,7 @@ dependencies {
     implementation(libs.toolingPreview)
     implementation(libs.coil.kt.compose)
     implementation(libs.timber)
+    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
 }

@@ -2,6 +2,8 @@ package alireza.nezami.database.dao
 
 import alireza.nezami.model.entity.VideoEntity
 import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
@@ -12,15 +14,18 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface VideoDao {
     @Transaction
-    @Query(value = "SELECT * FROM videos")
-    fun getAllVideos(): Flow<List<VideoEntity>>
+    @Query(value = "SELECT * FROM videos WHERE type = 'POPULAR'")
+    fun getAllPopularVideos(): Flow<List<VideoEntity>>
 
     @Transaction
-    @Query(value = "SELECT * FROM videos WHERE id = :id LIMIT 1")
-    fun getVideoById(id: Int): Flow<VideoEntity?>
+    @Query(value = "SELECT * FROM videos WHERE type = 'LATEST'")
+    fun getAllLatestVideos(): Flow<List<VideoEntity>>
 
-    @Query("DELETE FROM videos")
-    suspend fun deleteAllVideos()
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertVideos(videos: List<VideoEntity>)
+
+    @Query("DELETE FROM videos WHERE type = :type")
+    suspend fun deleteVideosByType(type: String)
 
     @Query("UPDATE videos SET isBookmarked = 1 WHERE id IN (:ids)")
     suspend fun updateBookmarkedStatus(ids: List<Int>)

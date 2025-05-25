@@ -3,7 +3,6 @@ plugins {
     alias(libs.plugins.kotlin.android)
     id ("kotlin-kapt")
 }
-val pixabayApiKey: String? by project
 
 android {
 
@@ -17,7 +16,6 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
-        buildConfigField("String", "PIXABAY_API_KEY", "\"$pixabayApiKey\"")
 
 
     }
