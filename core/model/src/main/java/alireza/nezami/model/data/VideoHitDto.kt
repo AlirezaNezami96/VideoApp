@@ -5,19 +5,20 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class VideoHitDto(
-    val id: Int? = null,
-    val pageURL: String? = null,
-    val type: String? = null,
-    val tags: String? = null,
-    val duration: Int? = null,
-    val videos: VideoVariantsDto? = null,
-    val views: Int? = null,
-    val downloads: Int? = null,
-    val likes: Int? = null,
-    val comments: Int? = null,
-    val user_id: Int? = null,
-    val user: String? = null,
-    val userImageURL: String? = null
+        val id: Int? = null,
+        val pageURL: String? = null,
+        val type: String? = null,
+        val tags: String? = null,
+        val duration: Int? = null,
+        val videos: VideoVariantsDto? = null,
+        val views: Int? = null,
+        val downloads: Int? = null,
+        val likes: Int? = null,
+        val comments: Int? = null,
+        val user_id: Int? = null,
+        val user: String? = null,
+        val userImageURL: String? = null,
+        var isBookmarked: Boolean? = null
 ) {
     fun toDM() = VideoHitDM(
         id = id ?: 0,
@@ -32,6 +33,7 @@ data class VideoHitDto(
         comments = comments ?: 0,
         userId = user_id ?: 0,
         user = user.orEmpty(),
-        userImageURL = userImageURL.orEmpty()
+        userImageURL = userImageURL.orEmpty(),
+        isBookmarked = isBookmarked ?: false
     )
 }

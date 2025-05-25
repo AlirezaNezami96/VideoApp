@@ -1,5 +1,6 @@
-package alireza.nezami.videoapp.navigation
+package alireza.nezami.search.navigation
 
+import alireza.nezami.search.presentation.SearchScreen
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
@@ -12,11 +13,13 @@ fun NavController.navigateToSearch(navOptions: NavOptions? = null) {
 }
 
 fun NavGraphBuilder.searchScreen(
-        onVideoClick: (Int) -> Unit,
-        onShowSnackbar: suspend (String, String?) -> Boolean
+        onVideoClick: (Int) -> Unit, onShowSnackbar: suspend (String, String?) -> Boolean
 ) {
     composable(
         route = searchNavigationRoute,
-    ) { //todo: add
+    ) {
+        SearchScreen(
+            onVideoClick = onVideoClick,
+        )
     }
 }

@@ -6,8 +6,8 @@ import alireza.nezami.home.navigation.navigateToHome
 import alireza.nezami.videoapp.navigation.TopLevelDestination
 import alireza.nezami.videoapp.navigation.bookmarkNavigationRoute
 import alireza.nezami.videoapp.navigation.navigateToBookmark
-import alireza.nezami.videoapp.navigation.navigateToSearch
-import alireza.nezami.videoapp.navigation.searchNavigationRoute
+import alireza.nezami.search.navigation.navigateToSearch
+import alireza.nezami.search.navigation.searchNavigationRoute
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
