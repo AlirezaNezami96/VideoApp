@@ -76,7 +76,7 @@ fun VideoCard(
                 modifier = Modifier
                     .align(Alignment.Center)
                     .background(
-                        Color.Black.copy(alpha = 0.4f), MaterialTheme.shapes.extraLarge
+                        Color.Black.copy(alpha = 0.6f), MaterialTheme.shapes.extraLarge
                     )
             ) {
                 Icon(
