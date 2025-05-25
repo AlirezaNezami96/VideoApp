@@ -1,19 +1,29 @@
 package alireza.nezami.detail.presentation
 
+import alireza.nezami.common.utils.extensions.formatWithCommas
+import alireza.nezami.common.utils.extensions.toTagList
 import alireza.nezami.designsystem.R
 import alireza.nezami.designsystem.component.DynamicAsyncImage
+import alireza.nezami.designsystem.component.HeightSpacer
 import alireza.nezami.designsystem.component.ThumbnailSelector
 import alireza.nezami.designsystem.component.TopAppBar
+import alireza.nezami.designsystem.component.UserParts
+import alireza.nezami.designsystem.component.WidthSpacer
 import alireza.nezami.designsystem.extensions.collectWithLifecycle
 import alireza.nezami.detail.presentation.contract.DetailEvent
 import alireza.nezami.detail.presentation.contract.DetailIntent
 import alireza.nezami.detail.presentation.contract.DetailUiState
 import alireza.nezami.detail.presentation.contract.VideoPlayerState
 import alireza.nezami.model.domain.VideoHitDM
-import android.widget.ImageView
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,11 +36,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowLeft
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -46,6 +57,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -55,7 +67,6 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.flow.Flow
 
 @Composable
@@ -99,10 +110,154 @@ fun DetailContent(
             videoPlayerState = videoPlayerState,
             getOrCreatePlayer = getOrCreatePlayer
         )
+        userParts(uiState.video)
+        tagsList(uiState.video)
+        statisticsLayout(uiState.video)
     }
 
 }
 
+@OptIn(ExperimentalLayoutApi::class)
+fun LazyListScope.statisticsLayout(video: VideoHitDM?) {
+    item {
+        HeightSpacer(8)
+        HorizontalDivider()
+        HeightSpacer(16)
+    }
+
+    item {
+        Text(
+            text = "Statistics", style = MaterialTheme.typography.titleLarge.copy(
+                color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Medium
+            ), modifier = Modifier.padding(horizontal = 16.dp)
+        )
+        HeightSpacer(16)
+
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            StatisticText(
+                text = video?.views.formatWithCommas(),
+                icon = R.drawable.ic_view,
+            )
+            StatisticText(
+                text = video?.downloads.formatWithCommas(),
+                icon = R.drawable.ic_download,
+            )
+            StatisticText(
+                text = video?.likes.formatWithCommas(),
+                icon = R.drawable.ic_like,
+            )
+            StatisticText(
+                text = video?.comments.formatWithCommas(),
+                icon = R.drawable.ic_comment,
+            )
+        }
+    }
+
+    item {
+        HeightSpacer(16)
+        HorizontalDivider()
+        HeightSpacer(8)
+    }
+}
+
+@Composable
+fun StatisticText(
+        text: String, @DrawableRes icon: Int, modifier: Modifier = Modifier
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .background(Color.Transparent)
+            .clip(MaterialTheme.shapes.extraSmall)
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.onSurface,
+                shape = MaterialTheme.shapes.medium
+            )
+    ) {
+        WidthSpacer(16)
+        Icon(
+            painter = painterResource(icon),
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier
+                .padding(vertical = 16.dp)
+                .size(24.dp)
+        )
+        WidthSpacer(16)
+        Text(
+            text = text,
+            modifier = Modifier.padding(vertical = 16.dp),
+            style = MaterialTheme.typography.bodyLarge.copy(
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        )
+        WidthSpacer(16)
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+fun LazyListScope.tagsList(video: VideoHitDM?) {
+    item {
+        HeightSpacer(8)
+        HorizontalDivider()
+        HeightSpacer(16)
+    }
+    item {
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Text(
+                text = "Tags: ", style = MaterialTheme.typography.bodyLarge.copy(
+                    color = MaterialTheme.colorScheme.onSurface
+                ), modifier = Modifier.align(Alignment.CenterVertically)
+            )
+
+            video?.tags?.toTagList().orEmpty().forEach { tag ->
+                Text(
+                    text = tag,
+                    modifier = Modifier
+                        .clip(MaterialTheme.shapes.medium)
+                        .background(Color.Transparent)
+                        .border(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            shape = MaterialTheme.shapes.medium
+                        )
+                        .padding(horizontal = 8.dp, vertical = 6.dp),
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                )
+            }
+        }
+    }
+
+}
+
+fun LazyListScope.userParts(video: VideoHitDM?) {
+    item {
+        HeightSpacer(16)
+        HorizontalDivider()
+        HeightSpacer(8)
+    }
+    item {
+        UserParts(
+            userName = video?.user.orEmpty(),
+            userAvatar = video?.userImageURL.orEmpty(),
+            imageSize = 50,
+            spaceBetween = 8,
+            textStyle = MaterialTheme.typography.titleLarge.copy(
+                color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Medium
+            )
+        )
+    }
+
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 fun LazyListScope.topBar(uiState: DetailUiState, onIntent: (DetailIntent) -> Unit) {
