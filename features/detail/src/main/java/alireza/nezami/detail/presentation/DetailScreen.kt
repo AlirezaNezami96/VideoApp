@@ -148,20 +148,10 @@ fun LazyListScope.videoPlayer(
         val thumbnailHeight = ThumbnailSelector.calculateThumbnailHeight(video?.videos)
         val thumbnail = ThumbnailSelector.selectThumbnail(video?.videos).url
         var isPlaying by rememberSaveable { mutableStateOf(false) }
-        var isFullScreen by rememberSaveable { mutableStateOf(false) }
 
-        val systemUiController = rememberSystemUiController()
-
-        LaunchedEffect(isFullScreen) {
-            systemUiController.isSystemBarsVisible = !isFullScreen
-        }
 
         Box(
-            modifier = if (isFullScreen) {
-                Modifier.fillMaxSize()
-            } else {
-                Modifier
-            }
+            modifier = Modifier
         ) {
             if (isPlaying) {
                 video?.videos?.large?.url?.let { videoUrl ->
@@ -172,9 +162,6 @@ fun LazyListScope.videoPlayer(
                             .height(thumbnailHeight)
                             .fillMaxWidth()
                             .clip(shape = MaterialTheme.shapes.medium),
-                        onFullScreenToggle = { fullScreen ->
-                            isFullScreen = fullScreen
-                        },
                         getOrCreatePlayer = getOrCreatePlayer,
                         updateVideoPlayerState = updateVideoPlayerState
                     )
@@ -233,7 +220,6 @@ private val VideoPlayerStateSaver =
 fun VideoPlayer(
         url: String,
         modifier: Modifier = Modifier,
-        onFullScreenToggle: (Boolean) -> Unit,
         getOrCreatePlayer: (String) -> ExoPlayer,
         videoPlayerState: VideoPlayerState,
         updateVideoPlayerState: (VideoPlayerState) -> Unit
@@ -261,27 +247,6 @@ fun VideoPlayer(
             setShowNextButton(false)
             setShowPreviousButton(false)
         }
-    }
-
-    val fullScreenButton = remember {
-        playerView.findViewById<ImageView>(androidx.media3.ui.R.id.exo_fullscreen)?.apply {
-            setOnClickListener {
-                val newFullScreenState = !playerState.value.value.isFullScreen
-                playerState.value.value =
-                    playerState.value.value.copy(isFullScreen = newFullScreenState)
-                onFullScreenToggle(newFullScreenState)
-            }
-        }
-    }
-
-    LaunchedEffect(playerState.value.value.isFullScreen) {
-        fullScreenButton?.setImageResource(
-            if (playerState.value.value.isFullScreen) {
-                R.drawable.ic_fullscreen_exit
-            } else {
-                R.drawable.ic_fullscreen
-            }
-        )
     }
 
     DisposableEffect(key1 = Unit) {
