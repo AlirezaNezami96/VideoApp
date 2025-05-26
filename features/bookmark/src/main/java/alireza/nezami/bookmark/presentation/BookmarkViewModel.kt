@@ -39,7 +39,7 @@ class BookmarkViewModel @Inject constructor(
     override fun mapIntents(intent: BookmarkIntent): Flow<BookmarkUiState.PartialState> =
         when (intent) {
             is BookmarkIntent.OnVideoClick -> {
-                publishEvent(BookmarkEvent.NavigateToVideoDetail(intent.id))
+                publishEvent(BookmarkEvent.NavigateToVideoDetail(intent.video))
                 emptyFlow()
             }
 

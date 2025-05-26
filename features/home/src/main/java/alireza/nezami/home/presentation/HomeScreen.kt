@@ -49,7 +49,7 @@ import kotlinx.coroutines.flow.Flow
 @Composable
 fun HomeScreen(
         viewModel: HomeViewModel = hiltViewModel<HomeViewModel>(),
-        onVideoClick: (Int) -> Unit,
+        onVideoClick: (video: VideoHitDM) -> Unit,
         onSearchClick: () -> Unit,
 ) {
 
@@ -129,7 +129,7 @@ fun VideoListContent(
         list: List<VideoHitDM>,
         onPaginate: () -> Unit,
         onBookmarkClick: (video: VideoHitDM) -> Unit,
-        onVideoCardClick: (id: Int) -> Unit,
+        onVideoCardClick: (video: VideoHitDM) -> Unit,
         shown: Boolean
 ) {
     if (shown) {
@@ -163,7 +163,7 @@ fun VideoListContent(
                     modifier = Modifier.padding(vertical = 8.dp),
                     videos = video.videos,
                     onVideoCardClick = {
-                        onVideoCardClick(video.id)
+                        onVideoCardClick(video)
                     },
                     onBookmarkClick = {
                         onBookmarkClick(video)
@@ -247,12 +247,14 @@ private fun TabContent(uiState: HomesUiState, onIntent: (HomeIntent) -> Unit) {
 
 @Composable
 private fun HandleEvents(
-        events: Flow<HomeEvent>, navigateToVideoDetail: (Int) -> Unit, navigateToSearch: () -> Unit
+        events: Flow<HomeEvent>,
+        navigateToVideoDetail: (video: VideoHitDM) -> Unit,
+        navigateToSearch: () -> Unit
 ) {
     events.collectWithLifecycle {
         when (it) {
             HomeEvent.NavigateToSearch -> navigateToSearch()
-            is HomeEvent.NavigateToVideoDetail -> navigateToVideoDetail(it.id)
+            is HomeEvent.NavigateToVideoDetail -> navigateToVideoDetail(it.video)
         }
     }
 }

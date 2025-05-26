@@ -55,7 +55,7 @@ class HomeViewModel @Inject constructor(
         )
 
         is HomeIntent.OnVideoClick -> {
-            publishEvent(HomeEvent.NavigateToVideoDetail(intent.id))
+            publishEvent(HomeEvent.NavigateToVideoDetail(intent.video))
             emptyFlow()
         }
 

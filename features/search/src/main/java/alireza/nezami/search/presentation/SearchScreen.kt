@@ -47,7 +47,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Composable
 fun SearchScreen(
-        viewModel: SearchViewModel = hiltViewModel(), onVideoClick: (Int) -> Unit
+        viewModel: SearchViewModel = hiltViewModel(), onVideoClick: (video: VideoHitDM) -> Unit
 ) {
 
     val uiState by viewModel.uiState.collectAsState()
@@ -110,7 +110,7 @@ fun SearchListContent(
         list: List<VideoHitDM>,
         onPaginate: () -> Unit,
         onBookmarkClick: (video: VideoHitDM) -> Unit,
-        onVideoCardClick: (id: Int) -> Unit
+        onVideoCardClick: (video: VideoHitDM) -> Unit
 ) {
     val lazyListThreshold = 6
     val lazyListState = rememberLazyListState()
@@ -139,7 +139,7 @@ fun SearchListContent(
                 modifier = Modifier.padding(vertical = 8.dp),
                 videos = video.videos,
                 onVideoCardClick = {
-                    onVideoCardClick(video.id)
+                    onVideoCardClick(video)
                 },
                 onBookmarkClick = {
                     onBookmarkClick(video)
@@ -212,11 +212,11 @@ fun SearchContent(
 
 @Composable
 private fun HandleEvents(
-        events: Flow<SearchEvent>, navigateToVideoDetail: (Int) -> Unit
+        events: Flow<SearchEvent>, navigateToVideoDetail: (video: VideoHitDM) -> Unit
 ) {
     events.collectWithLifecycle {
         when (it) {
-            is SearchEvent.NavigateToVideoDetail -> navigateToVideoDetail(it.id)
+            is SearchEvent.NavigateToVideoDetail -> navigateToVideoDetail(it.video)
         }
     }
 }

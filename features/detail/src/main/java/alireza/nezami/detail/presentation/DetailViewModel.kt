@@ -68,17 +68,17 @@ class DetailViewModel @Inject constructor(
     }
 
 
-    private val detailArgs: DetailArgs = DetailArgs(savedStateHandle)
-    private val videoId = detailArgs.videoId.toIntOrNull().orZero()
+    private val video: VideoHitDM? = DetailArgs.fromSavedStateHandle(savedStateHandle)?.video
+    private val videoId: Int = video?.id.orZero()
 
     init {
-        acceptIntent(DetailIntent.GetVideoDetail(videoId))
+        acceptIntent(DetailIntent.GetVideoDetail(video))
         acceptIntent(DetailIntent.GetIsVideoBookmarked(videoId))
     }
 
     override fun mapIntents(intent: DetailIntent): Flow<DetailUiState.PartialState> =
         when (intent) {
-            is DetailIntent.GetVideoDetail -> getVideoDetail(intent.id)
+            is DetailIntent.GetVideoDetail -> getVideoDetail(intent.video)
             is DetailIntent.OnBookmarkClick -> markVideoAsBookmarked(uiState.value.video)
             DetailIntent.OnNavigateBackClick -> {
                 publishEvent(DetailEvent.NavigateBack)
@@ -114,16 +114,20 @@ class DetailViewModel @Inject constructor(
     }
 
 
-    private fun getVideoDetail(id: Int): Flow<DetailUiState.PartialState> = flow {
-        getVideoByIdUseCase(id = id).asResult().map {
-            when (it) {
-                is Result.Error -> emit(DetailUiState.PartialState.Error(it.exception?.message.orEmpty()))
-                Result.Loading -> emit(DetailUiState.PartialState.Loading(true))
-                is Result.Success -> emit(DetailUiState.PartialState.AddVideoDetail(it.data.firstOrNull()))
-            }
-        }.catch {
-            emit(DetailUiState.PartialState.Error(it.message.orEmpty()))
-        }.collect()
+    private fun getVideoDetail(video: VideoHitDM?): Flow<DetailUiState.PartialState> = flow {
+        if (video != null){
+            emit(DetailUiState.PartialState.AddVideoDetail(video))
+        } else {
+            getVideoByIdUseCase(id = videoId).asResult().map {
+                when (it) {
+                    is Result.Error -> emit(DetailUiState.PartialState.Error(it.exception?.message.orEmpty()))
+                    Result.Loading -> emit(DetailUiState.PartialState.Loading(true))
+                    is Result.Success -> emit(DetailUiState.PartialState.AddVideoDetail(it.data.firstOrNull()))
+                }
+            }.catch {
+                emit(DetailUiState.PartialState.Error(it.message.orEmpty()))
+            }.collect()
+        }
     }
 
     private fun getIsVideoBookmarked(id: Int): Flow<DetailUiState.PartialState> = flow {

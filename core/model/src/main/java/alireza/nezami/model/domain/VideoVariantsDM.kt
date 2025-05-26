@@ -3,7 +3,9 @@ package alireza.nezami.model.domain
 import alireza.nezami.model.entity.VideoVariantsEntity
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 
+@Serializable
 @Parcelize
 data class VideoVariantsDM(
         val large: VideoFileDM?,

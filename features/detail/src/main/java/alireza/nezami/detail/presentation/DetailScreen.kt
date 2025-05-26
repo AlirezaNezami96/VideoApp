@@ -103,6 +103,7 @@ fun DetailContent(
     ) {
         topBar(uiState, onIntent)
         loading(uiState.isLoading)
+        userParts(uiState.video)
         videoPlayer(
             uiState.video,
             onIntent,
@@ -110,48 +111,60 @@ fun DetailContent(
             videoPlayerState = videoPlayerState,
             getOrCreatePlayer = getOrCreatePlayer
         )
-        userParts(uiState.video)
-        tagsList(uiState.video)
+
         statisticsLayout(uiState.video)
+
+        tagsList(uiState.video)
     }
 
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 fun LazyListScope.statisticsLayout(video: VideoHitDM?) {
     item {
-        HeightSpacer(8)
-        HorizontalDivider()
         HeightSpacer(16)
     }
 
     item {
-        Text(
-            text = "Statistics", style = MaterialTheme.typography.titleLarge.copy(
-                color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Medium
-            ), modifier = Modifier.padding(horizontal = 16.dp)
-        )
-        HeightSpacer(16)
-
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+        Row(
+            horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()
         ) {
             StatisticText(
                 text = video?.views.formatWithCommas(),
                 icon = R.drawable.ic_view,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
             )
             StatisticText(
                 text = video?.downloads.formatWithCommas(),
                 icon = R.drawable.ic_download,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
             )
+        }
+    }
+    item {
+        HeightSpacer(8)
+    }
+
+    item {
+        Row(
+            horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()
+        ) {
             StatisticText(
                 text = video?.likes.formatWithCommas(),
                 icon = R.drawable.ic_like,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
             )
             StatisticText(
                 text = video?.comments.formatWithCommas(),
                 icon = R.drawable.ic_comment,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
             )
         }
     }
@@ -169,9 +182,11 @@ fun StatisticText(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
         modifier = modifier
             .background(Color.Transparent)
             .clip(MaterialTheme.shapes.extraSmall)
+            .padding(horizontal = 8.dp)
             .border(
                 width = 1.dp,
                 color = MaterialTheme.colorScheme.onSurface,
@@ -202,14 +217,13 @@ fun StatisticText(
 @OptIn(ExperimentalLayoutApi::class)
 fun LazyListScope.tagsList(video: VideoHitDM?) {
     item {
-        HeightSpacer(8)
-        HorizontalDivider()
         HeightSpacer(16)
     }
     item {
         FlowRow(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+            modifier = Modifier.padding(horizontal = 8.dp)
         ) {
             Text(
                 text = "Tags: ", style = MaterialTheme.typography.bodyLarge.copy(
@@ -221,15 +235,15 @@ fun LazyListScope.tagsList(video: VideoHitDM?) {
                 Text(
                     text = tag,
                     modifier = Modifier
-                        .clip(MaterialTheme.shapes.medium)
+                        .clip(MaterialTheme.shapes.small)
                         .background(Color.Transparent)
                         .border(
                             width = 1.dp,
                             color = MaterialTheme.colorScheme.onSurface,
-                            shape = MaterialTheme.shapes.medium
+                            shape = MaterialTheme.shapes.small
                         )
                         .padding(horizontal = 8.dp, vertical = 6.dp),
-                    style = MaterialTheme.typography.bodyLarge.copy(
+                    style = MaterialTheme.typography.bodySmall.copy(
                         color = MaterialTheme.colorScheme.onSurface
                     )
                 )
@@ -240,23 +254,22 @@ fun LazyListScope.tagsList(video: VideoHitDM?) {
 }
 
 fun LazyListScope.userParts(video: VideoHitDM?) {
+
     item {
-        HeightSpacer(16)
-        HorizontalDivider()
         HeightSpacer(8)
-    }
-    item {
         UserParts(
             userName = video?.user.orEmpty(),
             userAvatar = video?.userImageURL.orEmpty(),
-            imageSize = 50,
-            spaceBetween = 8,
-            textStyle = MaterialTheme.typography.titleLarge.copy(
+            imageSize = 32,
+            spaceBetween = 4,
+            textStyle = MaterialTheme.typography.titleMedium.copy(
                 color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Medium
             )
         )
     }
-
+    item {
+        HeightSpacer(8)
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

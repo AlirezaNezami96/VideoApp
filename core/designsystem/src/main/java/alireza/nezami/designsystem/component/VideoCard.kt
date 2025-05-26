@@ -185,9 +185,9 @@ fun TagsList(tagsList: List<String>) {
 fun UserParts(
         userName: String,
         userAvatar: String,
-        imageSize: Int = 24,
+        imageSize: Int = 20,
         spaceBetween: Int = 0,
-        textStyle: TextStyle = MaterialTheme.typography.bodySmall.copy(
+        textStyle: TextStyle = MaterialTheme.typography.labelLarge.copy(
             color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.SemiBold
         )
 ) {
