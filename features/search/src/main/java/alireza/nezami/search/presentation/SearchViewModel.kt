@@ -113,48 +113,74 @@ class SearchViewModel @Inject constructor(
 
     }
 
-
     private fun addVideosToList(
             previousList: List<VideoHitDM>, newList: List<VideoHitDM>
     ): List<VideoHitDM> {
-        val finalList = previousList.toMutableList().apply {
-            addAll(newList)
-        }
-        return finalList
-    }
+        val existingIds = previousList.map { it.id }.toSet()
+        val uniqueNewVideos = newList.filterNot { it.id in existingIds }
 
+        return previousList + uniqueNewVideos
+    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun searchVideos(
-            page: Int, query: StateFlow<String>
+            page: Int,
+            query: StateFlow<String>
     ): Flow<SearchUiState.PartialState> = channelFlow {
         searchJob?.cancel()
         searchJob = launch {
             delay(500)
-            query.filter { newQuery -> newQuery.isNotBlank() }.flatMapLatest { newQuery ->
-                    searchVideosUseCase(page = page, query = newQuery).asResult().map {
-                        when (it) {
-                            is Result.Error -> send(
-                                SearchUiState.PartialState.SearchResultError(
-                                    it.exception?.message.orEmpty()
-                                )
-                            )
+            query.filter { newQuery -> newQuery.isNotBlank() }
+                .flatMapLatest { newQuery ->
+                    flow {
+                        var currentPage = page
+                        var accumulatedResults = emptyList<VideoHitDM>()
+                        var shouldFetchMore = true
 
-                            Result.Loading -> send(
-                                SearchUiState.PartialState.SearchResultLoading(true)
-                            )
+                        while (shouldFetchMore) {
+                            searchVideosUseCase(
+                                page = currentPage,
+                                query = newQuery,
+                                filterByDuration = true
+                            ).asResult().collect { result ->
+                                when (result) {
+                                    is Result.Error -> {
+                                        shouldFetchMore = false
+                                        send(SearchUiState.PartialState.SearchResultError(
+                                            result.exception?.message.orEmpty()
+                                        ))
+                                    }
+                                    Result.Loading -> {
+                                        send(SearchUiState.PartialState.SearchResultLoading(true))
+                                    }
+                                    is Result.Success -> {
+                                        val newResults = result.data
+                                        accumulatedResults = if (currentPage == page) {
+                                            newResults
+                                        } else {
+                                            addVideosToList(accumulatedResults, newResults)
+                                        }
 
-                            is Result.Success -> send(
-                                SearchUiState.PartialState.AddSearchResult(it.data)
-                            )
+                                        // Send results immediately if we have any
+                                        if (accumulatedResults.isNotEmpty()) {
+                                            send(SearchUiState.PartialState.AddSearchResult(accumulatedResults))
+                                        }
+
+                                        // Continue fetching if needed
+                                        if (accumulatedResults.size < 10 && newResults.isNotEmpty()) {
+                                            currentPage++
+                                        } else {
+                                            shouldFetchMore = false
+                                        }
+                                    }
+                                }
+                            }
                         }
-                    }.catch {
-                        send(SearchUiState.PartialState.SearchResultError(it.message.orEmpty()))
+                        emit(Unit)
                     }
                 }.collect()
         }
     }
-
     override fun onCleared() {
         super.onCleared()
         searchJob?.cancel()

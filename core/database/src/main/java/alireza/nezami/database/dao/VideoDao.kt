@@ -14,11 +14,11 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface VideoDao {
     @Transaction
-    @Query(value = "SELECT * FROM videos WHERE `order` = 'POPULAR'")
+    @Query(value = "SELECT * FROM videos WHERE `order` = 'POPULAR' AND duration > 60")
     fun getAllPopularVideos(): Flow<List<VideoEntity>>
 
     @Transaction
-    @Query(value = "SELECT * FROM videos WHERE `order` = 'LATEST'")
+    @Query(value = "SELECT * FROM videos WHERE `order` = 'LATEST' AND duration > 60")
     fun getAllLatestVideos(): Flow<List<VideoEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

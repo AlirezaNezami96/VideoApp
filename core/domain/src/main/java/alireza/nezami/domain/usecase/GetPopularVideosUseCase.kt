@@ -10,9 +10,18 @@ import javax.inject.Inject
 class GetPopularVideosUseCase @Inject constructor(
         private val repository: VideoRepository
 ) {
-    suspend operator fun invoke(page: Int? = null, perPage: Int? = null): Flow<List<VideoHitDM>> =
+    suspend operator fun invoke(
+            page: Int? = null,
+            perPage: Int? = null,
+            filterByDuration: Boolean = false
+    ): Flow<List<VideoHitDM>> =
         repository.getPopularVideos(page, perPage).map { entities ->
-            entities.map { it.toDM() }
+            entities
+                .map { it.toDM() }
+                .let { videos ->
+                    if (filterByDuration) {
+                        videos.filter { it.duration >= 60 }
+                    } else videos
+                }
         }
 }
-
