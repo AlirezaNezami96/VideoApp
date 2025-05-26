@@ -318,7 +318,8 @@ fun LazyListScope.videoPlayer(
                             .height(thumbnailHeight)
                             .fillMaxWidth(),
                         getOrCreatePlayer = getOrCreatePlayer,
-                        updateVideoPlayerState = updateVideoPlayerState
+                        updateVideoPlayerState = updateVideoPlayerState,
+                        autoPlay = true
                     )
                 }
             } else {
@@ -376,6 +377,7 @@ fun VideoPlayer(
         modifier: Modifier = Modifier,
         getOrCreatePlayer: (String) -> ExoPlayer,
         videoPlayerState: VideoPlayerState,
+        autoPlay: Boolean = false,
         updateVideoPlayerState: (VideoPlayerState) -> Unit
 ) {
     val context = LocalContext.current
@@ -385,7 +387,13 @@ fun VideoPlayer(
     }
 
     val exoPlayer = remember(url) {
-        getOrCreatePlayer(url)
+        getOrCreatePlayer(url).apply {
+            if (autoPlay) {
+                playWhenReady = true
+                prepare()
+                play()
+            }
+        }
     }
 
     DisposableEffect(playerState.value) {
