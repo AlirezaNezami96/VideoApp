@@ -1,6 +1,6 @@
 package alireza.nezami.detail.presentation
 
-import alireza.nezami.common.utils.extensions.formatWithCommas
+import alireza.nezami.common.utils.extensions.toAbbreviatedString
 import alireza.nezami.common.utils.extensions.toTagList
 import alireza.nezami.designsystem.R
 import alireza.nezami.designsystem.component.DynamicAsyncImage
@@ -8,7 +8,6 @@ import alireza.nezami.designsystem.component.GradientColorProvider
 import alireza.nezami.designsystem.component.HeightSpacer
 import alireza.nezami.designsystem.component.ThumbnailSelector
 import alireza.nezami.designsystem.component.TopAppBar
-import alireza.nezami.designsystem.component.UserParts
 import alireza.nezami.designsystem.component.WidthSpacer
 import alireza.nezami.designsystem.component.gradientBorder
 import alireza.nezami.designsystem.extensions.collectWithLifecycle
@@ -19,7 +18,6 @@ import alireza.nezami.detail.presentation.contract.VideoPlayerState
 import alireza.nezami.model.domain.VideoHitDM
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,12 +32,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowLeft
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -61,6 +58,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -106,75 +104,57 @@ fun DetailContent(
     ) {
         topBar(uiState, onIntent)
         loading(uiState.isLoading)
-        userParts(uiState.video)
         videoPlayer(
             uiState.video,
             updateVideoPlayerState = updateVideoPlayerState,
             videoPlayerState = videoPlayerState,
             getOrCreatePlayer = getOrCreatePlayer
         )
-
         statisticsLayout(uiState.video)
+        userParts(uiState.video)
 
         tagsList(uiState.video)
     }
 
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 fun LazyListScope.statisticsLayout(video: VideoHitDM?) {
     item {
-        HeightSpacer(16)
-    }
-
-    item {
-        Row(
+        HeightSpacer(8)
+        FlowRow(
             horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()
         ) {
             StatisticText(
-                text = video?.views.formatWithCommas(),
+                text = video?.views.toAbbreviatedString(),
                 icon = R.drawable.ic_view,
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
             )
             StatisticText(
-                text = video?.downloads.formatWithCommas(),
+                text = video?.downloads.toAbbreviatedString(),
                 icon = R.drawable.ic_download,
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
             )
-        }
-    }
-    item {
-        HeightSpacer(8)
-    }
 
-    item {
-        Row(
-            horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()
-        ) {
             StatisticText(
-                text = video?.likes.formatWithCommas(),
+                text = video?.likes.toAbbreviatedString(),
                 icon = R.drawable.ic_like,
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
             )
             StatisticText(
-                text = video?.comments.formatWithCommas(),
+                text = video?.comments.toAbbreviatedString(),
                 icon = R.drawable.ic_comment,
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
             )
         }
-    }
-
-    item {
-        HeightSpacer(16)
-        HorizontalDivider()
-        HeightSpacer(8)
     }
 }
 
@@ -187,27 +167,21 @@ fun StatisticText(
         horizontalArrangement = Arrangement.Center,
         modifier = modifier
             .background(Color.Transparent)
-            .clip(MaterialTheme.shapes.extraSmall)
-            .padding(horizontal = 8.dp)
-            .border(
-                width = 1.dp,
-                color = MaterialTheme.colorScheme.onSurface,
-                shape = MaterialTheme.shapes.medium
-            )
+            .padding(horizontal = 16.dp)
     ) {
-        WidthSpacer(16)
+        WidthSpacer(12)
         Icon(
             painter = painterResource(icon),
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier
-                .padding(vertical = 16.dp)
-                .size(24.dp)
+                .padding(vertical = 10.dp)
+                .size(20.dp)
         )
-        WidthSpacer(16)
+        WidthSpacer(8)
         Text(
             text = text,
-            modifier = Modifier.padding(vertical = 16.dp),
+            modifier = Modifier.padding(vertical = 10.dp),
             style = MaterialTheme.typography.bodyLarge.copy(
                 color = MaterialTheme.colorScheme.onSurface
             )
@@ -240,7 +214,7 @@ fun LazyListScope.tagsList(video: VideoHitDM?) {
                         .clip(MaterialTheme.shapes.small)
                         .background(Color.Transparent)
                         .gradientBorder(
-                            width = (0.7).dp,
+                            width = (0.6).dp,
                             gradient = GradientColorProvider.getRandomGradient(),
                             shape = MaterialTheme.shapes.small
                         )
@@ -258,16 +232,30 @@ fun LazyListScope.tagsList(video: VideoHitDM?) {
 fun LazyListScope.userParts(video: VideoHitDM?) {
 
     item {
-        HeightSpacer(8)
-        UserParts(
-            userName = video?.user.orEmpty(),
-            userAvatar = video?.userImageURL.orEmpty(),
-            imageSize = 32,
-            spaceBetween = 4,
-            textStyle = MaterialTheme.typography.titleMedium.copy(
-                color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Medium
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(8.dp),
+        ) {
+            DynamicAsyncImage(
+                imageUrl = video?.userImageURL.orEmpty(),
+                contentDescription = "User Avatar",
+                modifier = Modifier
+                    .size(32.dp)
+                    .clip(CircleShape)
             )
-        )
+
+            WidthSpacer(16)
+            Text(
+                text = video?.user.orEmpty(),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.titleMedium.copy(
+                    color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Medium
+                )
+            )
+
+
+        }
     }
     item {
         HeightSpacer(8)
@@ -318,9 +306,8 @@ fun LazyListScope.videoPlayer(
         val thumbnail = ThumbnailSelector.selectThumbnail(video?.videos).url
         var isPlaying by rememberSaveable { mutableStateOf(false) }
 
-
         Box(
-            modifier = Modifier
+            modifier = Modifier.fillMaxWidth()
         ) {
             if (isPlaying) {
                 video?.videos?.large?.url?.let { videoUrl ->
@@ -329,8 +316,7 @@ fun LazyListScope.videoPlayer(
                         videoPlayerState = videoPlayerState,
                         modifier = Modifier
                             .height(thumbnailHeight)
-                            .fillMaxWidth()
-                            .clip(shape = MaterialTheme.shapes.medium),
+                            .fillMaxWidth(),
                         getOrCreatePlayer = getOrCreatePlayer,
                         updateVideoPlayerState = updateVideoPlayerState
                     )
@@ -340,8 +326,7 @@ fun LazyListScope.videoPlayer(
                     contentDescription = "Video Poster",
                     modifier = Modifier
                         .height(thumbnailHeight)
-                        .fillMaxWidth()
-                        .clip(shape = MaterialTheme.shapes.medium),
+                        .fillMaxWidth(),
                     imageUrl = thumbnail
                 )
 
