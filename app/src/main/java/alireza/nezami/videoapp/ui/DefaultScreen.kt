@@ -8,7 +8,6 @@ import alireza.nezami.videoapp.navigation.AppNavHost
 import alireza.nezami.videoapp.navigation.TopLevelDestination
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -22,7 +21,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -42,6 +40,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
@@ -50,7 +49,6 @@ import timber.log.Timber
 
 @OptIn(
     ExperimentalMaterial3Api::class,
-    ExperimentalLayoutApi::class,
 )
 @Composable
 fun DefaultScreen(
@@ -65,7 +63,7 @@ fun DefaultScreen(
         val isOffline by appState.isOffline.collectAsState()
 
         // If user is not connected to the internet show a snack bar to inform them.
-        val notConnectedMessage = stringResource(R.string.search)
+        val notConnectedMessage = stringResource(R.string.not_connected)
         LaunchedEffect(isOffline) {
             if (isOffline) {
                 snackbarHostState.showSnackbar(
@@ -160,12 +158,21 @@ private fun BottomBar(
                     selected = selected,
                     onClick = { onNavigateToDestination(destination) },
                     icon = {
-                        Icon(
-                            imageVector = destination.selectedIcon,
-                            contentDescription = null,
-                            modifier = Modifier.size(20.dp),
-                            tint = MaterialTheme.colorScheme.onBackground
-                        )
+                        if (destination.selectedIconRes != null) {
+                            Icon(
+                                painter = painterResource(destination.selectedIconRes),
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp),
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
+                        } else {
+                            Icon(
+                                imageVector = destination.selectedIcon,
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp),
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
                     },
                     label = {
                         Text(

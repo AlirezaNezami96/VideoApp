@@ -4,11 +4,13 @@ import alireza.nezami.common.utils.extensions.formatWithCommas
 import alireza.nezami.common.utils.extensions.toTagList
 import alireza.nezami.designsystem.R
 import alireza.nezami.designsystem.component.DynamicAsyncImage
+import alireza.nezami.designsystem.component.GradientColorProvider
 import alireza.nezami.designsystem.component.HeightSpacer
 import alireza.nezami.designsystem.component.ThumbnailSelector
 import alireza.nezami.designsystem.component.TopAppBar
 import alireza.nezami.designsystem.component.UserParts
 import alireza.nezami.designsystem.component.WidthSpacer
+import alireza.nezami.designsystem.component.gradientBorder
 import alireza.nezami.designsystem.extensions.collectWithLifecycle
 import alireza.nezami.detail.presentation.contract.DetailEvent
 import alireza.nezami.detail.presentation.contract.DetailIntent
@@ -32,6 +34,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowLeft
 import androidx.compose.material3.CircularProgressIndicator
@@ -106,7 +109,6 @@ fun DetailContent(
         userParts(uiState.video)
         videoPlayer(
             uiState.video,
-            onIntent,
             updateVideoPlayerState = updateVideoPlayerState,
             videoPlayerState = videoPlayerState,
             getOrCreatePlayer = getOrCreatePlayer
@@ -237,9 +239,9 @@ fun LazyListScope.tagsList(video: VideoHitDM?) {
                     modifier = Modifier
                         .clip(MaterialTheme.shapes.small)
                         .background(Color.Transparent)
-                        .border(
-                            width = 1.dp,
-                            color = MaterialTheme.colorScheme.onSurface,
+                        .gradientBorder(
+                            width = (0.7).dp,
+                            gradient = GradientColorProvider.getRandomGradient(),
                             shape = MaterialTheme.shapes.small
                         )
                         .padding(horizontal = 8.dp, vertical = 6.dp),
@@ -307,7 +309,6 @@ fun LazyListScope.loading(loading: Boolean) {
 
 fun LazyListScope.videoPlayer(
         video: VideoHitDM?,
-        onIntent: (DetailIntent) -> Unit,
         getOrCreatePlayer: (String) -> ExoPlayer,
         updateVideoPlayerState: (VideoPlayerState) -> Unit,
         videoPlayerState: VideoPlayerState
@@ -350,7 +351,7 @@ fun LazyListScope.videoPlayer(
                         .width(100.dp)
                         .height(64.dp)
                         .background(
-                            Color.Black.copy(alpha = 0.7f), MaterialTheme.shapes.extraLarge
+                            Color.Black.copy(alpha = 0.7f), MaterialTheme.shapes.large
                         )
                         .clickable { isPlaying = true }) {
                     Icon(
