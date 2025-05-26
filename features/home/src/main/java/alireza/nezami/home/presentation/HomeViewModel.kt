@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -47,11 +48,11 @@ class HomeViewModel @Inject constructor(
 
 
         is HomeIntent.GetPopularVideos -> getPopularVideos(
-            intent.page ?: uiState.value.popularVideoState.nextPage
+            intent.page ?: uiState.value.popularVideoState.page
         )
 
         is HomeIntent.GetLatestVideos -> getLatestVideos(
-            intent.page ?: uiState.value.latestVideoState.nextPage
+            intent.page ?: uiState.value.latestVideoState.page
         )
 
         is HomeIntent.OnVideoClick -> {
@@ -159,15 +160,15 @@ class HomeViewModel @Inject constructor(
     private fun addVideosToList(
             previousList: List<VideoHitDM>, newList: List<VideoHitDM>
     ): List<VideoHitDM> {
-        val finalList = previousList.toMutableList().apply {
-            addAll(newList)
-        }
-        return finalList
-    }
+        val existingIds = previousList.map { it.id }.toSet()
+        val uniqueNewVideos = newList.filterNot { it.id in existingIds }
 
+        return previousList + uniqueNewVideos
+    }
 
     private fun getPopularVideos(page: Int): Flow<HomesUiState.PartialState> = flow {
         getPopularVideosUseCase(page).asResult().map {
+            Timber.d("getPopularVideos: $it")
             when (it) {
                 is Result.Error -> emit(HomesUiState.PartialState.PopularError(it.exception?.message.orEmpty()))
                 Result.Loading -> emit(HomesUiState.PartialState.PopularLoading(true))

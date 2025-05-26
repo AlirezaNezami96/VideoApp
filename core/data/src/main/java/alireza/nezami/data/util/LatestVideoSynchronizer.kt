@@ -2,7 +2,9 @@ package alireza.nezami.data.util
 
 import alireza.nezami.database.dao.BookmarkDao
 import alireza.nezami.database.dao.VideoDao
+import alireza.nezami.model.data.ApiPageConfig
 import alireza.nezami.model.data.VideoOrder
+import alireza.nezami.model.entity.VideoEntity
 import alireza.nezami.network.data_source.VideoDataSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
@@ -20,72 +22,67 @@ class LatestVideoSynchronizer @Inject constructor(
         private val coroutineScope: CoroutineScope,
         private val mapper: VideoMapper,
 ) {
-    private val synchronizationState =
-        MutableStateFlow<SynchronizationState>(SynchronizationState.Idle)
+    private val _synchronizationState = MutableStateFlow<SynchronizationState>(SynchronizationState.Idle)
+    val synchronizationStateFlow: StateFlow<SynchronizationState> get() = _synchronizationState
 
-    val synchronizationStateFlow: StateFlow<SynchronizationState>
-        get() = synchronizationState
-
-    fun startSynchronization() {
+    fun startSynchronization(page: Int? = null, perPage: Int? = null) {
         coroutineScope.launch {
-            synchronize()
+            _synchronizationState.value = SynchronizationState.Idle
+            synchronize(
+                page = page ?: ApiPageConfig.DEFAULT_PAGE,
+                perPage = perPage ?: ApiPageConfig.DEFAULT_PER_PAGE
+            )
         }
     }
 
     fun stopSynchronization() {
+        _synchronizationState.value = SynchronizationState.Idle
         coroutineScope.cancel()
     }
 
-    private suspend fun synchronize() {
-        synchronizationState.value = SynchronizationState.InProgress
+    private suspend fun synchronize(
+            page: Int = ApiPageConfig.DEFAULT_PAGE,
+            perPage: Int = ApiPageConfig.DEFAULT_PER_PAGE
+    ) {
+        _synchronizationState.value = SynchronizationState.InProgress
 
         try {
-            val localVideos = localVideoDataSource.getAllLatestVideos().first()
-            val localBookmarks = localBookmarkDataSource.getAllBookmarks().first()
-            val bookmarkedIds = localBookmarks.map { it.id }
+            remoteDataSource.getLatestVideos(page = page, perPage = perPage)
+                .catch { // If remote fails, get from local
+                    val localVideos = localVideoDataSource.getAllLatestVideos().first()
+                    if (localVideos.isEmpty()) {
+                        _synchronizationState.value = SynchronizationState.Error("No data available")
+                    } else {
+                        emitVideosWithBookmarks(localVideos)
+                    }
+                }.collect { remoteData ->
+                    if (remoteData.hits?.isNotEmpty() == true) {
+                        val mappedData = mapper.mapToEntities(
+                            videoResponses = remoteData.hits.orEmpty(),
+                            order = VideoOrder.LATEST
+                        )
 
-            if (bookmarkedIds.isNotEmpty()) {
-                localVideos.forEach { video ->
-                    if (bookmarkedIds.contains(video.id)) {
-                        video.isBookmarked = true
+                        // Save to local DB
+                        localVideoDataSource.deleteVideosByType(VideoOrder.LATEST.value)
+                        localVideoDataSource.insertVideos(mappedData)
+
+                        emitVideosWithBookmarks(mappedData)
+                    } else {
+                        _synchronizationState.value = SynchronizationState.Error("No data available")
                     }
                 }
-            }
-
-            if (localVideos.isNotEmpty()) {
-                synchronizationState.value = SynchronizationState.Success(localVideos)
-            }
-
-
-            remoteDataSource.getLatestVideos(page = 1, perPage = 20).catch {
-                if (localVideos.isEmpty()) {
-                    synchronizationState.value =
-                        SynchronizationState.Error("Failed to fetch remote data")
-                }
-            }.collect { remoteData ->
-                if (remoteData.hits?.isNotEmpty() == true) {
-                    val mappedData = mapper.mapToEntities(
-                        videoResponses = remoteData.hits.orEmpty(), order = VideoOrder.LATEST
-                    )
-
-                    localVideoDataSource.deleteVideosByType(VideoOrder.LATEST.value)
-                    localVideoDataSource.insertVideos(mappedData)
-
-                    if (bookmarkedIds.isNotEmpty()) {
-                        mappedData.forEach { video ->
-                            if (bookmarkedIds.contains(video.id)) {
-                                video.isBookmarked = true
-                            }
-                        }
-                    }
-
-                    synchronizationState.value = SynchronizationState.Success(mappedData)
-                } else if (localVideos.isEmpty()) {
-                    synchronizationState.value = SynchronizationState.Error("No data available")
-                }
-            }
         } catch (e: Exception) {
-            synchronizationState.value = SynchronizationState.Error(e.message ?: "Unknown error")
+            _synchronizationState.value = SynchronizationState.Error(e.message ?: "Unknown error")
         }
+    }
+
+    private suspend fun emitVideosWithBookmarks(videos: List<VideoEntity>) {
+        val bookmarkedIds = localBookmarkDataSource.getAllBookmarks().first().map { it.id }
+
+        val videosWithBookmarks = videos.map { video ->
+            video.copy(isBookmarked = bookmarkedIds.contains(video.id))
+        }
+
+        _synchronizationState.value = SynchronizationState.Success(videosWithBookmarks)
     }
 }
