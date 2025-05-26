@@ -31,7 +31,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Composable
 fun BookmarkScreen(
-        viewModel: BookmarkViewModel = hiltViewModel(), onVideoClick: (Int) -> Unit
+        viewModel: BookmarkViewModel = hiltViewModel(), onVideoClick: (video: VideoHitDM) -> Unit
 ) {
 
     val uiState by viewModel.uiState.collectAsState()
@@ -90,13 +90,12 @@ fun BoxScope.LoadingComponent() {
 fun VideoListContent(
         list: List<VideoHitDM>,
         onBookmarkClick: (video: VideoHitDM) -> Unit,
-        onVideoCardClick: (id: Int) -> Unit
+        onVideoCardClick: (video: VideoHitDM) -> Unit
 ) {
     val lazyListState = rememberLazyListState()
 
     LazyColumn(
-        state = lazyListState,
-        contentPadding = PaddingValues(vertical = 16.dp)
+        state = lazyListState, contentPadding = PaddingValues(vertical = 16.dp)
     ) {
         items(
             list
@@ -109,7 +108,7 @@ fun VideoListContent(
                 modifier = Modifier.padding(vertical = 8.dp),
                 videos = video.videos,
                 onVideoCardClick = {
-                    onVideoCardClick(video.id)
+                    onVideoCardClick(video)
                 },
                 onBookmarkClick = {
                     onBookmarkClick(video)
@@ -121,11 +120,11 @@ fun VideoListContent(
 
 @Composable
 private fun HandleEvents(
-        events: Flow<BookmarkEvent>, navigateToVideoDetail: (Int) -> Unit
+        events: Flow<BookmarkEvent>, navigateToVideoDetail: (video: VideoHitDM) -> Unit
 ) {
     events.collectWithLifecycle {
         when (it) {
-            is BookmarkEvent.NavigateToVideoDetail -> navigateToVideoDetail(it.id)
+            is BookmarkEvent.NavigateToVideoDetail -> navigateToVideoDetail(it.video)
         }
     }
 }

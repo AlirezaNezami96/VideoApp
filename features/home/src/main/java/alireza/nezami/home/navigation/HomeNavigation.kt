@@ -1,6 +1,7 @@
 package alireza.nezami.home.navigation
 
 import alireza.nezami.home.presentation.HomeScreen
+import alireza.nezami.model.domain.VideoHitDM
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
@@ -13,7 +14,7 @@ fun NavController.navigateToHome(navOptions: NavOptions? = null) {
 }
 
 fun NavGraphBuilder.homeScreen(
-        onVideoClick: (Int) -> Unit,
+        onVideoClick: (video:VideoHitDM) -> Unit,
         onSearchClick: () -> Unit,
         onShowSnackbar: suspend (String, String?) -> Boolean
 ) {

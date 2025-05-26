@@ -1,13 +1,13 @@
 package alireza.nezami.common.utils.extensions
 
-import java.text.DecimalFormat
+import java.util.Locale
 
 /**
  * Returns this [Int] value if it is not null, or 0 if it is null.
  *
  * @return The non-null [Int] value or 0.
  */
-fun Int?.orZero() : Int {
+fun Int?.orZero(): Int {
     return this ?: 0
 }
 
@@ -54,7 +54,14 @@ fun Int?.formatWithCommas(): String {
     return formattedValue.toString()
 }
 
-fun String.toTagList(): List<String> =
-    this.split(",")
-        .map { it.trim() }
-        .filter { it.isNotEmpty() }
+fun String.toTagList(): List<String> = this.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+
+fun Int?.toAbbreviatedString(): String {
+    if (this == null) return "0"
+
+    return when {
+        this >= 1_000_000 -> String.format(Locale.getDefault(), "%.1fM", this / 1_000_000.0)
+        this >= 1_000 -> String.format(Locale.getDefault(), "%.1fK", this / 1_000.0)
+        else -> this.toString()
+    }.replace(".0", "") // Remove .0 if present
+}

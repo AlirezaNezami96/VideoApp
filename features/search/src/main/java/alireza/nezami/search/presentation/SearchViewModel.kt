@@ -46,7 +46,7 @@ class SearchViewModel @Inject constructor(
     override fun mapIntents(intent: SearchIntent): Flow<SearchUiState.PartialState> =
         when (intent) {
             is SearchIntent.OnVideoClick -> {
-                publishEvent(SearchEvent.NavigateToVideoDetail(intent.id))
+                publishEvent(SearchEvent.NavigateToVideoDetail(intent.video))
                 emptyFlow()
             }
 

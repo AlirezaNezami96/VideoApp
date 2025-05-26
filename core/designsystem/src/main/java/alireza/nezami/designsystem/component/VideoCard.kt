@@ -34,6 +34,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -75,17 +76,18 @@ fun VideoCard(
             Box(
                 modifier = Modifier
                     .align(Alignment.Center)
+                    .size(40.dp)
                     .background(
-                        Color.Black.copy(alpha = 0.6f), MaterialTheme.shapes.extraLarge
+                        Color.Black.copy(alpha = 0.7f), MaterialTheme.shapes.extraLarge
                     )
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_play_video),
+                    painter = painterResource(id = R.drawable.ic_video),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier
                         .align(Alignment.Center)
-                        .size(40.dp)
+                        .size(32.dp)
                         .padding(8.dp)
                 )
             }
@@ -145,8 +147,7 @@ fun VideoCard(
                         .clickable {
                             onBookmarkClick()
                         }
-                        .size(24.dp)
-                )
+                        .size(24.dp))
 
             }
 
@@ -181,20 +182,30 @@ fun TagsList(tagsList: List<String>) {
 }
 
 @Composable
-fun UserParts(userName: String, userAvatar: String) {
+fun UserParts(
+        userName: String,
+        userAvatar: String,
+        imageSize: Int = 20,
+        spaceBetween: Int = 0,
+        textStyle: TextStyle = MaterialTheme.typography.labelLarge.copy(
+            color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.SemiBold
+        )
+) {
     val goldGradient = Brush.sweepGradient(
         listOf(
             Color(0xFFFFD700), Color(0xFFFFA500), Color(0xFFFFE066), Color(0xFFFFD700)
         )
     )
     Row(
-        verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(8.dp)
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(spaceBetween.dp)
     ) {
         DynamicAsyncImage(
             imageUrl = userAvatar,
             contentDescription = "User Avatar",
             modifier = Modifier
-                .size(24.dp)
+                .size(imageSize.dp)
                 .drawBehind {
                     val strokeWidth = 2.dp.toPx()
                     val radius = size.minDimension / 2
@@ -209,12 +220,7 @@ fun UserParts(userName: String, userAvatar: String) {
                 .clip(RoundedCornerShape(50)))
         Spacer(modifier = Modifier.width(8.dp))
         Text(
-            text = userName,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            style = MaterialTheme.typography.bodySmall.copy(
-                color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.SemiBold
-            )
+            text = userName, maxLines = 1, overflow = TextOverflow.Ellipsis, style = textStyle
         )
     }
 }

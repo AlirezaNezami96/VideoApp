@@ -1,6 +1,8 @@
 package alireza.nezami.videoapp.navigation
 
 import alireza.nezami.bookmark.navigation.bookmarkScreen
+import alireza.nezami.detail.navigation.detailScreen
+import alireza.nezami.detail.navigation.navigateToDetail
 import alireza.nezami.home.navigation.homeNavigationRoute
 import alireza.nezami.home.navigation.homeScreen
 import alireza.nezami.search.navigation.navigateToSearch

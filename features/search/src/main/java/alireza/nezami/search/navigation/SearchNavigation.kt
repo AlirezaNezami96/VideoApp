@@ -1,5 +1,6 @@
 package alireza.nezami.search.navigation
 
+import alireza.nezami.model.domain.VideoHitDM
 import alireza.nezami.search.presentation.SearchScreen
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -13,7 +14,7 @@ fun NavController.navigateToSearch(navOptions: NavOptions? = null) {
 }
 
 fun NavGraphBuilder.searchScreen(
-        onVideoClick: (Int) -> Unit, onShowSnackbar: suspend (String, String?) -> Boolean
+        onVideoClick: (video: VideoHitDM) -> Unit, onShowSnackbar: suspend (String, String?) -> Boolean
 ) {
     composable(
         route = searchNavigationRoute,

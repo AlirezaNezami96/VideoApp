@@ -40,8 +40,8 @@ fun DynamicAsyncImage(
         modifier = modifier,
         contentScale = ContentScale.Crop,
         imageLoader = imageLoader,
-        placeholder = painterResource(R.drawable.ic_video),
-        error = painterResource(R.drawable.ic_video)
+        placeholder = painterResource(R.drawable.ic_video_placeholder),
+        error = painterResource(R.drawable.ic_video_placeholder)
 
     )
 }
