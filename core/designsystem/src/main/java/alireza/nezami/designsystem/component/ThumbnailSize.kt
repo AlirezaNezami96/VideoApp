@@ -6,65 +6,73 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import timber.log.Timber
 
 data class ThumbnailSize(
         val url: String, val width: Int, val height: Double
 )
 
 object ThumbnailSelector {
-    private const val LARGE_HEIGHT_THRESHOLD = 1080
-    private const val MEDIUM_HEIGHT_THRESHOLD = 720
-    private const val SMALL_HEIGHT_THRESHOLD = 360
 
     @Composable
     fun selectThumbnail(variants: VideoVariantsDM?): ThumbnailSize {
-        val screenHeight = LocalConfiguration.current.screenHeightDp
+        val screenWidth = LocalConfiguration.current.screenWidthDp
         val density = LocalDensity.current
+        val screenWidthPx = with(density) { screenWidth.dp.toPx() }
 
-        // Convert dp to pixels
-        val screenHeightPx = with(density) { screenHeight.dp.toPx() }
+        // Calculate quality scores based on screen width and thumbnail dimensions
+        fun calculateQualityScore(width: Int, size: String): Double {
+            val sizeMultiplier = when (size) {
+                "SMALL" -> 1.6  // Boost for small
+                "MEDIUM" -> 1.1 // Preferred option
+                "LARGE" -> 0.8  // Penalty for large
+                else -> 1.0
+            }
 
-        return when {
-            screenHeightPx >= LARGE_HEIGHT_THRESHOLD && variants?.large != null -> ThumbnailSize(
-                variants.large?.thumbnail.orEmpty(),
-                variants.large?.width ?: 0,
-                variants.large?.height ?: 0.0
-            )
-
-            screenHeightPx >= MEDIUM_HEIGHT_THRESHOLD && variants?.medium != null -> ThumbnailSize(
-                variants.large?.thumbnail.orEmpty(),
-                variants.large?.width ?: 0,
-                variants.large?.height ?: 0.0
-            )
-
-            screenHeightPx >= SMALL_HEIGHT_THRESHOLD && variants?.small != null -> ThumbnailSize(
-                variants.large?.thumbnail.orEmpty(),
-                variants.large?.width ?: 0,
-                variants.large?.height ?: 0.0
-            )
-
-            variants?.tiny != null -> ThumbnailSize(
-                variants.large?.thumbnail.orEmpty(),
-                variants.large?.width ?: 0,
-                variants.large?.height ?: 0.0
-            )
-
-            else -> variants?.let {
-                it.small?.let { small ->
-                    ThumbnailSize(
-                        small.thumbnail, small.width, small.height
-                    )
-                } ?: it.medium?.let { medium ->
-                    ThumbnailSize(
-                        medium.thumbnail, medium.width, medium.height
-                    )
-                } ?: it.large?.let { large ->
-                    ThumbnailSize(
-                        large.thumbnail, large.width, large.height
-                    )
-                }
-            } ?: ThumbnailSize("", 0, 0.0)
+            return (1 - kotlin.math.abs(screenWidthPx - width) / screenWidthPx) * sizeMultiplier
         }
+
+        val thumbnailSize = variants?.let { v ->
+            // Calculate scores for available sizes
+            val scores = mutableListOf<Pair<ThumbnailSize, Double>>()
+
+            v.medium?.let {
+                scores.add(
+                    ThumbnailSize(it.thumbnail, it.width, it.height) to
+                            calculateQualityScore(it.width, "MEDIUM")
+                )
+            }
+            v.small?.let {
+                scores.add(
+                    ThumbnailSize(it.thumbnail, it.width, it.height) to
+                            calculateQualityScore(it.width, "SMALL")
+                )
+            }
+            v.large?.let {
+                scores.add(
+                    ThumbnailSize(it.thumbnail, it.width, it.height) to
+                            calculateQualityScore(it.width, "LARGE")
+                )
+            }
+            v.tiny?.let {
+                scores.add(
+                    ThumbnailSize(it.thumbnail, it.width, it.height) to
+                            calculateQualityScore(it.width, "TINY")
+                )
+            }
+
+            // Select the thumbnail with the highest score
+            scores.maxByOrNull { it.second }?.first?.also { selected ->
+                Timber.d("Selected optimized thumbnail: width=${selected.width}, height=${selected.height}, score=${scores.find { it.first == selected }?.second}")
+            } ?: ThumbnailSize("", 0, 0.0).also {
+                Timber.d("No suitable thumbnail found, using default empty thumbnail")
+            }
+        } ?: ThumbnailSize("", 0, 0.0).also {
+            Timber.d("Variants null, using default empty thumbnail")
+        }
+
+        Timber.d("Screen width: ${screenWidthPx}px")
+        return thumbnailSize
     }
 
     @Composable

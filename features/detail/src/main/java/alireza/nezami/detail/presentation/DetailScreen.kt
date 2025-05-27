@@ -110,8 +110,9 @@ fun DetailContent(
             videoPlayerState = videoPlayerState,
             getOrCreatePlayer = getOrCreatePlayer
         )
-        statisticsLayout(uiState.video)
         userParts(uiState.video)
+
+        statisticsLayout(uiState.video)
 
         tagsList(uiState.video)
     }
@@ -121,7 +122,6 @@ fun DetailContent(
 @OptIn(ExperimentalLayoutApi::class)
 fun LazyListScope.statisticsLayout(video: VideoHitDM?) {
     item {
-        HeightSpacer(8)
         FlowRow(
             horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()
         ) {
@@ -227,11 +227,17 @@ fun LazyListScope.tagsList(video: VideoHitDM?) {
         }
     }
 
+    item {
+        HeightSpacer(16)
+    }
+
 }
 
 fun LazyListScope.userParts(video: VideoHitDM?) {
 
     item {
+        HeightSpacer(8)
+
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(8.dp),
@@ -240,7 +246,7 @@ fun LazyListScope.userParts(video: VideoHitDM?) {
                 imageUrl = video?.userImageURL.orEmpty(),
                 contentDescription = "User Avatar",
                 modifier = Modifier
-                    .size(32.dp)
+                    .size(40.dp)
                     .clip(CircleShape)
             )
 

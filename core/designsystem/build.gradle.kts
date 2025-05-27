@@ -48,4 +48,5 @@ dependencies {
     implementation(libs.toolingPreview)
     debugImplementation(libs.tooling)
     implementation(libs.coil.kt.compose)
+    implementation(libs.timber)
 }
