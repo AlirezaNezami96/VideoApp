@@ -3,6 +3,7 @@ package alireza.nezami.network.data_source
 import alireza.nezami.model.data.ApiPageConfig
 import alireza.nezami.model.data.VideoOrder
 import alireza.nezami.model.data.VideoResponseDto
+import alireza.nezami.network.BuildConfig
 import alireza.nezami.network.api_service.PixabayVideoApiService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -17,7 +18,7 @@ class VideoDataSourceImpl @Inject constructor(
     override suspend fun getLatestVideos(page: Int?, perPage: Int?): Flow<VideoResponseDto> = flow {
         emit(
             apiService.getLatestVideos(
-                apiKey = "50415008-c6afa5a143fc6fbd5f7489388",
+                apiKey = BuildConfig.PIXABAY_API_KEY,
                 page = page ?: ApiPageConfig.DEFAULT_PAGE,
                 perPage = perPage ?: ApiPageConfig.DEFAULT_PER_PAGE
             )
@@ -28,7 +29,7 @@ class VideoDataSourceImpl @Inject constructor(
         flow {
             emit(
                 apiService.getPopularVideos(
-                    apiKey = "50415008-c6afa5a143fc6fbd5f7489388",
+                    apiKey = BuildConfig.PIXABAY_API_KEY,
                     page = page ?: ApiPageConfig.DEFAULT_PAGE,
                     perPage = perPage ?: ApiPageConfig.DEFAULT_PER_PAGE
                 )
@@ -38,7 +39,7 @@ class VideoDataSourceImpl @Inject constructor(
     override suspend fun getVideoById(id: Int): Flow<VideoResponseDto> = flow {
         emit(
             apiService.getVideoById(
-                apiKey = "50415008-c6afa5a143fc6fbd5f7489388", id = id
+                apiKey = BuildConfig.PIXABAY_API_KEY, id = id
             )
         )
     }
@@ -48,7 +49,7 @@ class VideoDataSourceImpl @Inject constructor(
     ): Flow<VideoResponseDto> = flow {
         emit(
             apiService.searchVideo(
-                apiKey = "50415008-c6afa5a143fc6fbd5f7489388",
+                apiKey = BuildConfig.PIXABAY_API_KEY,
                 query = query,
                 page = page ?: ApiPageConfig.DEFAULT_PAGE,
                 perPage = perPage ?: ApiPageConfig.DEFAULT_PER_PAGE,

@@ -72,14 +72,6 @@ class DetailViewModel @Inject constructor(
         return videoPlayerManager.getPlayer(url)
     }
 
-    fun pausePlayer() {
-        videoPlayerManager.pausePlayer()
-    }
-
-    fun resumePlayer() {
-        videoPlayerManager.resumePlayer()
-    }
-
     override fun onCleared() {
         super.onCleared()
         videoPlayerManager.releasePlayer()
