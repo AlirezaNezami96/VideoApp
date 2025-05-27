@@ -7,50 +7,66 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class VideoPlayerManager @Inject constructor(@ApplicationContext private val context: Context) {
     private var exoPlayer: ExoPlayer? = null
     private var currentUrl: String? = null
-    private var isPlayerPrepared = false
+    private var lastPosition: Long = 0
+    private var wasPlaying: Boolean = false
 
-    @OptIn(UnstableApi::class)
     fun getPlayer(url: String): ExoPlayer {
-        if (exoPlayer == null) {
-            createNewPlayer(url)
-        } else if (currentUrl != url) {
-            createNewPlayer(url)
-        } else if (!isPlayerPrepared) {
-            preparePlayer(url)
-        }
+        return if (currentUrl == url && exoPlayer != null) {
+            // Return existing player if URL matches
+            exoPlayer!!
+        } else {
+            // Save state before releasing old player
+            savePlayerState()
+            releasePlayer()
 
-        return exoPlayer!!
+            // Create new player
+            ExoPlayer.Builder(context)
+                .setHandleAudioBecomingNoisy(true)
+                .build().apply {
+                    setMediaItem(MediaItem.fromUri(url))
+                    seekTo(lastPosition)
+                    playWhenReady = wasPlaying
+                    prepare()
+                    exoPlayer = this
+                    currentUrl = url
+                }
+        }
     }
 
-    @OptIn(UnstableApi::class)
-    private fun createNewPlayer(url: String) {
-        releasePlayer()
-        exoPlayer = ExoPlayer.Builder(context)
-            .setSeekBackIncrementMs(10000)
-            .setSeekForwardIncrementMs(10000)
-            .build()
-        preparePlayer(url)
+    fun savePlayerState() {
+        exoPlayer?.let {
+            lastPosition = it.currentPosition
+            wasPlaying = it.isPlaying
+        }
     }
 
-    private fun preparePlayer(url: String) {
-        exoPlayer?.apply {
-            setMediaItem(MediaItem.fromUri(url))
-            prepare()
-            currentUrl = url
-            isPlayerPrepared = true
-        }
+    fun restorePlayerState(): Pair<Long, Boolean> {
+        return Pair(lastPosition, wasPlaying)
     }
 
     fun releasePlayer() {
+        savePlayerState()
         exoPlayer?.release()
         exoPlayer = null
         currentUrl = null
-        isPlayerPrepared = false
     }
 
-    fun getPlayerOrNull() = exoPlayer
+    fun pausePlayer() {
+        savePlayerState()
+        exoPlayer?.pause()
+    }
+
+    fun resumePlayer() {
+        exoPlayer?.let { player ->
+            if (wasPlaying) {
+                player.play()
+            }
+        }
+    }
 }

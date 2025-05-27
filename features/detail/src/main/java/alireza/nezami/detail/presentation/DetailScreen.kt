@@ -16,6 +16,7 @@ import alireza.nezami.detail.presentation.contract.DetailIntent
 import alireza.nezami.detail.presentation.contract.DetailUiState
 import alireza.nezami.detail.presentation.contract.VideoPlayerState
 import alireza.nezami.model.domain.VideoHitDM
+import androidx.activity.compose.LocalActivity
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -42,6 +43,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -64,9 +66,12 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout
+import androidx.media3.ui.DefaultTimeBar
 import androidx.media3.ui.PlayerView
 import kotlinx.coroutines.flow.Flow
 
@@ -316,7 +321,7 @@ fun LazyListScope.videoPlayer(
             modifier = Modifier.fillMaxWidth()
         ) {
             if (isPlaying) {
-                video?.videos?.large?.url?.let { videoUrl ->
+                video?.videos?.tiny?.url?.let { videoUrl ->
                     VideoPlayer(
                         url = videoUrl,
                         videoPlayerState = videoPlayerState,
@@ -386,25 +391,64 @@ fun VideoPlayer(
         autoPlay: Boolean = false,
         updateVideoPlayerState: (VideoPlayerState) -> Unit
 ) {
+    val activity = LocalActivity.current
     val context = LocalContext.current
     val lifecycle = LocalLifecycleOwner.current.lifecycle
-    val playerState = rememberSaveable(stateSaver = VideoPlayerStateSaver) {
-        mutableStateOf(mutableStateOf(videoPlayerState))
-    }
+    var isConfigurationChanging by remember { mutableStateOf(false) }
 
-    val exoPlayer = remember(url) {
+    // Don't recreate player on recomposition - use LaunchedEffect instead
+    val exoPlayer = remember {
         getOrCreatePlayer(url).apply {
-            if (autoPlay) {
-                playWhenReady = true
-                prepare()
-                play()
-            }
+            repeatMode = Player.REPEAT_MODE_OFF
+            seekTo(videoPlayerState.playbackPosition)
+            playWhenReady = videoPlayerState.isPlaying || autoPlay
         }
     }
 
-    DisposableEffect(playerState.value) {
-        updateVideoPlayerState(playerState.value.value)
-        onDispose { }
+    // Update player when URL changes
+    LaunchedEffect(url) {
+        if (exoPlayer.mediaItemCount == 0 ||
+            exoPlayer.currentMediaItem?.localConfiguration?.uri.toString() != url) {
+            val currentPosition = exoPlayer.currentPosition
+            val wasPlaying = exoPlayer.isPlaying
+
+            exoPlayer.setMediaItem(MediaItem.fromUri(url))
+            exoPlayer.seekTo(if (currentPosition > 0) currentPosition else videoPlayerState.playbackPosition)
+            exoPlayer.playWhenReady = wasPlaying || videoPlayerState.isPlaying || autoPlay
+            exoPlayer.prepare()
+        }
+    }
+
+    DisposableEffect(exoPlayer) {
+        val listener = object : Player.Listener {
+            override fun onPlaybackStateChanged(playbackState: Int) {
+                if (!isConfigurationChanging) {
+                    updateVideoPlayerState(
+                        VideoPlayerState(
+                            isFullScreen = videoPlayerState.isFullScreen,
+                            isPlaying = exoPlayer.isPlaying,
+                            playbackPosition = exoPlayer.currentPosition
+                        )
+                    )
+                }
+            }
+
+            override fun onIsPlayingChanged(isPlaying: Boolean) {
+                if (!isConfigurationChanging) {
+                    updateVideoPlayerState(
+                        VideoPlayerState(
+                            isFullScreen = videoPlayerState.isFullScreen,
+                            isPlaying = isPlaying,
+                            playbackPosition = exoPlayer.currentPosition
+                        )
+                    )
+                }
+            }
+        }
+        exoPlayer.addListener(listener)
+        onDispose {
+            exoPlayer.removeListener(listener)
+        }
     }
 
     val playerView = remember {
@@ -414,23 +458,53 @@ fun VideoPlayer(
             resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT
             setShowNextButton(false)
             setShowPreviousButton(false)
+            setShowFastForwardButton(true)
+            setShowRewindButton(true)
+            controllerShowTimeoutMs = 3500
+            controllerAutoShow = true
+            setKeepContentOnPlayerReset(true)
+            controllerHideOnTouch = true
+
+            findViewById<DefaultTimeBar>(androidx.media3.ui.R.id.exo_progress)?.apply {
+                setEnabled(true)
+                isClickable = true
+            }
         }
     }
 
-    DisposableEffect(key1 = Unit) {
+    // Handle lifecycle events with configuration change detection
+    DisposableEffect(lifecycle) {
         val lifecycleObserver = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_PAUSE -> {
-                    playerState.value.value = playerState.value.value.copy(
-                        isPlaying = exoPlayer.isPlaying,
-                        playbackPosition = exoPlayer.currentPosition
-                    )
-                    exoPlayer.pause()
+                    // Detect if this is a configuration change
+                    isConfigurationChanging = activity?.isChangingConfigurations == true
+
+                    if (!isConfigurationChanging) {
+                        // Only pause if not configuration changing
+                        updateVideoPlayerState(
+                            VideoPlayerState(
+                                isFullScreen = videoPlayerState.isFullScreen,
+                                isPlaying = exoPlayer.isPlaying,
+                                playbackPosition = exoPlayer.currentPosition
+                            )
+                        )
+                        exoPlayer.pause()
+                    }
                 }
 
                 Lifecycle.Event.ON_RESUME -> {
-                    if (playerState.value.value.isPlaying) {
+                    isConfigurationChanging = false
+                    // Restore playback state
+                    if (videoPlayerState.isPlaying && !exoPlayer.isPlaying) {
+                        exoPlayer.seekTo(videoPlayerState.playbackPosition)
                         exoPlayer.play()
+                    }
+                }
+
+                Lifecycle.Event.ON_STOP -> {
+                    if (!isConfigurationChanging) {
+                        exoPlayer.pause()
                     }
                 }
 
@@ -442,25 +516,35 @@ fun VideoPlayer(
 
         onDispose {
             lifecycle.removeObserver(lifecycleObserver)
-            playerState.value.value = playerState.value.value.copy(
-                isPlaying = exoPlayer.isPlaying, playbackPosition = exoPlayer.currentPosition
+            updateVideoPlayerState(
+                VideoPlayerState(
+                    isFullScreen = videoPlayerState.isFullScreen,
+                    isPlaying = exoPlayer.isPlaying,
+                    playbackPosition = exoPlayer.currentPosition
+                )
             )
         }
     }
 
     Box(
-        modifier = if (playerState.value.value.isFullScreen) {
+        modifier = if (videoPlayerState.isFullScreen) {
             Modifier.fillMaxSize()
         } else {
             modifier
         }
     ) {
         AndroidView(
-            factory = { playerView }, modifier = Modifier.fillMaxSize()
+            factory = { playerView },
+            modifier = Modifier.fillMaxSize(),
+            update = { view ->
+                // Ensure player is set after configuration change
+                if (view.player != exoPlayer) {
+                    view.player = exoPlayer
+                }
+            }
         )
     }
 }
-
 
 @Composable
 private fun HandleEvents(

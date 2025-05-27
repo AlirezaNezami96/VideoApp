@@ -18,7 +18,6 @@ import alireza.nezami.model.domain.VideoHitDM
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
-import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -32,7 +31,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DetailViewModel @Inject constructor(
-        savedStateHandle: SavedStateHandle,
+        private val savedStateHandle: SavedStateHandle,
         private val addBookmarkUseCase: AddBookmarkUseCase,
         private val removeBookmarkUseCase: RemoveBookmarkUseCase,
         private val getVideoByIdUseCase: GetVideoByIdUseCase,
@@ -41,25 +40,44 @@ class DetailViewModel @Inject constructor(
 ) : BaseViewModel<DetailUiState, DetailUiState.PartialState, DetailEvent, DetailIntent>(
     savedStateHandle, DetailUiState()
 ) {
-    init {
-        Timber.d("DetailViewModel initialized")
-    }
 
-    private var _videoPlayerState = mutableStateOf(VideoPlayerState())
+    private var _videoPlayerState = mutableStateOf(
+        VideoPlayerState(
+            playbackPosition = savedStateHandle.get<Long>("playback_position") ?: 0L,
+            isPlaying = savedStateHandle.get<Boolean>("is_playing") ?: false,
+            isFullScreen = savedStateHandle.get<Boolean>("is_fullscreen") ?: false
+        )
+    )
     val videoPlayerState: State<VideoPlayerState> = _videoPlayerState
 
+    init {
+        Timber.d("DetailViewModel initialized") // Restore state from savedStateHandle
+        val (position, wasPlaying) = videoPlayerManager.restorePlayerState()
+        if (position > 0) {
+            _videoPlayerState.value = _videoPlayerState.value.copy(
+                playbackPosition = position, isPlaying = wasPlaying
+            )
+        }
+    }
+
     fun updateVideoPlayerState(state: VideoPlayerState) {
-        _videoPlayerState.value = state
+        _videoPlayerState.value = state // Save to savedStateHandle for configuration changes
+        savedStateHandle["playback_position"] = state.playbackPosition
+        savedStateHandle["is_playing"] = state.isPlaying
+        savedStateHandle["is_fullscreen"] = state.isFullScreen
     }
 
     fun getOrCreatePlayer(url: String): ExoPlayer {
         Timber.d("getOrCreatePlayer: $url")
-        return videoPlayerManager.getPlayer(url).also { player ->
-            if (player.playbackState == Player.STATE_IDLE || player.playbackState == Player.STATE_ENDED) {
-                player.playWhenReady = _videoPlayerState.value.isPlaying
-                player.seekTo(_videoPlayerState.value.playbackPosition)
-            }
-        }
+        return videoPlayerManager.getPlayer(url)
+    }
+
+    fun pausePlayer() {
+        videoPlayerManager.pausePlayer()
+    }
+
+    fun resumePlayer() {
+        videoPlayerManager.resumePlayer()
     }
 
     override fun onCleared() {
@@ -115,7 +133,7 @@ class DetailViewModel @Inject constructor(
 
 
     private fun getVideoDetail(video: VideoHitDM?): Flow<DetailUiState.PartialState> = flow {
-        if (video != null){
+        if (video != null) {
             emit(DetailUiState.PartialState.AddVideoDetail(video))
         } else {
             getVideoByIdUseCase(id = videoId).asResult().map {
